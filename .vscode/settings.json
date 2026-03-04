@@ -14,6 +14,7 @@
     "chat.tools.terminal.autoApprove": {
         "pre-commit": true,
         "awk": true,
-        "npx markdownlint-cli": true
+        "npx markdownlint-cli": true,
+        "molecule": true
     }
 }
