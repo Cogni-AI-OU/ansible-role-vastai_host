@@ -1,10 +1,11 @@
-# Ansible Role: Template
+# Ansible Role: Vast.ai Host Setup
 
 [![PR Reviews][pr-reviews-image]][pr-reviews-link]
 [![License][license-image]][license-link]
 
-This is a template role.
-Use it as starting point to create your own role.
+This Ansible role sets up hosts for the Vast.ai GPU marketplace platform.
+It configures systems to be compatible with Vast.ai's requirements for GPU
+instance providers.
 
 ## Getting Started
 
@@ -20,7 +21,7 @@ Or simply open this repository in a devcontainer - the extension is pre-configur
 
 ## Requirements
 
-This role requires:
+This role configures hosts for Vast.ai GPU marketplace compatibility and requires:
 
 - Ansible
 - Python
@@ -35,7 +36,7 @@ This role requires:
 To install this role, you can use the following terminal command:
 
 ```shell
-ansible-galaxy install git+https://github.com/Cogni-AI-OU/ansible-role-template.git
+ansible-galaxy install git+https://github.com/Cogni-AI-OU/ansible-role-vastai_host.git
 ```
 
 ## Role Variables
@@ -60,7 +61,7 @@ Steps to test role on Docker containers.
     Alternatively, for development purposes, you can consider using symbolic link, e.g.
 
     ```shell
-    ln -vs "$PWD" ~/.ansible/roles/cogni-ai.template
+    ln -vs "$PWD" ~/.ansible/roles/cogni-ai.vastai_host
     ```
 
 2. Ensure Docker service (e.g. Docker Desktop) is running.
@@ -138,7 +139,7 @@ configuration, see [.github/README.md](.github/README.md).
 
 <!-- Named links -->
 
-[pr-reviews-image]: https://img.shields.io/github/issues-pr/Cogni-AI-OU/ansible-role-template?label=PR+Reviews&logo=github
-[pr-reviews-link]: https://github.com/Cogni-AI-OU/ansible-role-template/pulls
+[pr-reviews-image]: https://img.shields.io/github/issues-pr/Cogni-AI-OU/ansible-role-vastai_host?label=PR+Reviews&logo=github
+[pr-reviews-link]: https://github.com/Cogni-AI-OU/ansible-role-vastai_host/pulls
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
 [license-link]: LICENSE

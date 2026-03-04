@@ -6,4 +6,4 @@
   tasks:
     - name: Include main role
       ansible.builtin.include_role:
-        name: cogni-ai.template
+        name: cogni-ai.vastai_host

@@ -11,7 +11,7 @@ galaxy_info:
     - docker
     - linux
     - ubuntu
-  issue_tracker_url: https://github.com/Cogni-AI-OU/ansible-role-template/issues
+  issue_tracker_url: https://github.com/Cogni-AI-OU/ansible-role-vastai_host/issues
   license: MIT
   min_ansible_version: '2.7'
   namespace: cogni-ai
@@ -34,4 +34,4 @@ galaxy_info:
         - bionic
         - focal
         - xenial
-  role_name: template
+  role_name: vastai_host

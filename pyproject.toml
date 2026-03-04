@@ -5,9 +5,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "ansible-ops-template"
+name = "ansible-role-vastai_host"
 version = "0.1.0"
-description = "Template for Example ops utilities that interact with external APIs."
+description = "Ansible role for Vast.ai host setup and configuration."
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.11"
@@ -22,5 +22,5 @@ authors = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Cogni-AI-OU/ansible-ops-template"
-Repository = "https://github.com/Cogni-AI-OU/ansible-ops-template"
+Homepage = "https://github.com/Cogni-AI-OU/ansible-role-vastai_host"
+Repository = "https://github.com/Cogni-AI-OU/ansible-role-vastai_host"

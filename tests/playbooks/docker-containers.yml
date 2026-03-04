@@ -108,16 +108,16 @@
       template-on-ubuntu-latest: ubuntu:latest
       template-on-ubuntu-noble: ubuntu:noble
     container_image: "{{ container_image_map[inventory_hostname] | default('ubuntu:latest') }}"
-- name: Install cogni-ai.template role on all containers
+- name: Install cogni-ai.vastai_host role on all containers
   hosts: docker_containers
   gather_facts: true
   tags: always
   vars:
     controller_python: '{{ ansible_playbook_python }}'
   tasks:
-    - name: Installs cogni-ai.template role
+    - name: Installs cogni-ai.vastai_host role
       ansible.builtin.import_role:
-        name: cogni-ai.template
+        name: cogni-ai.vastai_host
   post_tasks:
     - name: Stop Docker containers
       community.docker.docker_container:

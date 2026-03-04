@@ -3,4 +3,4 @@
   ansible.builtin.stat:
     path: /nix/store
   register: nix_store_stat
-  tags: template-setup
+  tags: vastai_host-setup

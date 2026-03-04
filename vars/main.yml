@@ -1,9 +1,9 @@
 ---
 # Vars file for ansible role.
 # Note: Keep YAML keys sorted alphabetically.
-# 'template_become_method' is expected to be a dictionary keyed by OS family (e.g., 'Debian', 'RedHat'),
+# 'vastai_host_become_method' is expected to be a dictionary keyed by OS family (e.g., 'Debian', 'RedHat'),
 # where each key maps to the appropriate become method (e.g., 'sudo', 'su') for that OS family.
-template_become_method:
+vastai_host_become_method:
   _default: ansible.builtin.sudo
   Alpine: ansible.builtin.su
   Darwin: ansible.builtin.sudo

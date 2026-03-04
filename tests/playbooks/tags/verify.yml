@@ -106,13 +106,13 @@
     container_image: "{{ container_image_map[inventory_hostname] | default('ubuntu:latest') }}"
   vars_files:
     - ../../vars/main.yml
-- name: Import cogni-ai.template role (verify tag)
+- name: Import cogni-ai.vastai_host role (verify tag)
   hosts: docker_containers
   gather_facts: true
   tasks:
-    - name: Import cogni-ai.template role
+    - name: Import cogni-ai.vastai_host role
       ansible.builtin.import_role:
-        name: cogni-ai.template
+        name: cogni-ai.vastai_host
   tags: verify
   post_tasks:
     - name: Stop Docker containers
