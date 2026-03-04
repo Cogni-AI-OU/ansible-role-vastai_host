@@ -19,12 +19,3 @@ all:
           ansible_connection: docker
           ansible_host: vastai-host-on-debian-latest
           ansible_python_interpreter: /usr/bin/python3
-        vastai-host-on-alpine-latest:
-          ansible_connection: docker
-          ansible_host: vastai-host-on-alpine-latest
-          ansible_python_interpreter: /usr/bin/python3
-        vastai-host-on-nixos-latest:
-          ansible_connection: docker
-          ansible_distribution: NixOS
-          ansible_host: vastai-host-on-nixos-latest
-          ansible_python_interpreter: /root/.nix-profile/bin/python3

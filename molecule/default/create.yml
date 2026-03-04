@@ -34,14 +34,8 @@
         name: '{{ item.name }}'
         image: '{{ item.image }}'
         command: sleep infinity
-        # NixOS containers require privileged mode due to non-standard filesystem layout.
-        privileged: "{{ 'nixos' in item.name }}"
-        # Relaxed seccomp/apparmor for NixOS compatibility.
-        security_opts: >-
-          {{ ['seccomp=unconfined', 'apparmor=unconfined']
-          if 'nixos' in item.name else omit }}
         recreate: true
-        pull: "{{ false if 'nixos' in item.name else true }}"
+        pull: true
       loop: '{{ molecule_yml.platforms }}'
     - name: Build instance config entries
       ansible.builtin.set_fact:

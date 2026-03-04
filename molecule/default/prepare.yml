@@ -1,6 +1,6 @@
 ---
 - name: Prepare hosts
-  hosts: all:!nixos*
+  hosts: all
   gather_facts: false
   tasks:
     - name: Install Python for Ansible
@@ -19,19 +19,4 @@
           echo "No supported package manager found" >&2
           exit 1
         fi
-      changed_when: false
-- name: Prepare NixOS hosts
-  hosts: nixos*
-  gather_facts: false
-  tasks:
-    - name: Install Python for Ansible on NixOS
-      ansible.builtin.raw: |
-        if command -v python3 || command -v python; then
-          exit 0
-        fi
-        mkdir -p /etc/nix
-        printf "sandbox = false\n" > /etc/nix/nix.conf
-        export NIX_CONFIG="sandbox = false"
-        nix-env --option sandbox false \
-          -iA nixpkgs.python3 nixpkgs.python3Packages.pip
       changed_when: false

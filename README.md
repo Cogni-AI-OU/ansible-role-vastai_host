@@ -26,10 +26,7 @@ This role configures hosts for Vast.ai GPU marketplace compatibility and require
 - Ansible
 - Python
 - Administrative/root access on target hosts
-- One of the following operating systems:
-  - Alpine Linux
-  - Debian/Ubuntu
-  - NixOS or systems with Nix package manager
+- Debian or Ubuntu operating system
 
 ## Install
 

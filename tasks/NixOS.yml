@@ -1,6 +1,0 @@
----
-- name: Check if Nix store exists
-  ansible.builtin.stat:
-    path: /nix/store
-  register: nix_store_stat
-  tags: vastai_host-setup

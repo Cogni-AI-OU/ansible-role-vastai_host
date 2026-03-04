@@ -2,6 +2,3 @@
 # Shared variables for verify playbook
 controller_pip: pip3
 controller_python: '{{ ansible_playbook_python }}'
-nixos_built_image: cogni-ai-vastai-host-nixos:latest
-nixos_dockerfile_output: '{{ playbook_dir }}/../../../molecule/resources/playbooks/Dockerfile.vastai-host-on-nixos'
-nixos_dockerfile_template: '{{ playbook_dir }}/../../../molecule/resources/playbooks/Dockerfile.j2'

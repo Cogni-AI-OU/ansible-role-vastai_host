@@ -33,7 +33,7 @@
     },
     {
       "title": "OS-Specific Tasks",
-      "description": "## Platform-Specific Task Files\n\nThe `tasks/` directory contains OS-specific task files for different platforms:\n\n### Available Platform Files:\n\n- **Alpine.yml**: Tasks for Alpine Linux\n- **Darwin.yml**: Tasks for macOS systems\n- **Debian.yml**: Tasks for Debian-based systems\n- **NixOS.yml**: Tasks for NixOS systems\n- **verify.yml**: Verification tasks for testing\n\n### Usage Pattern:\n\n```yaml\n- name: Include OS-specific tasks\n  ansible.builtin.include_tasks: \"{{ ansible_os_family }}.yml\"\n  when: ansible_os_family in ['Debian', 'Alpine']\n```\n\n### Best Practices:\n\n- Keep platform-specific logic in separate files\n- Use `ansible_os_family` or `ansible_distribution` for selection\n- Add `when` conditions for clarity\n- Document any platform-specific requirements",
+      "description": "## Platform-Specific Task Files\n\nThe `tasks/` directory contains task files for supported platforms:\n\n### Available Platform Files:\n\n- **Debian.yml**: Tasks for Debian/Ubuntu systems\n- **verify.yml**: Verification tasks for testing\n\n### Usage Pattern:\n\n```yaml\n- name: Include OS-specific tasks\n  ansible.builtin.include_tasks: Debian.yml\n  when: ansible_os_family == 'Debian'\n```\n\n### Best Practices:\n\n- Keep platform-specific logic in separate files\n- Use `ansible_os_family` or `ansible_distribution` for selection\n- Add `when` conditions for clarity\n- Document any platform-specific requirements",
       "directory": "tasks"
     },
     {

@@ -411,9 +411,6 @@ case "$(uname -s)" in
   Linux*)
     echo "Linux system"
     ;;
-  Darwin*)
-    echo "macOS system"
-    ;;
   *)
     echo "Unknown system"
     ;;
