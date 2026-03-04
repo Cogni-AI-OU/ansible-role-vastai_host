@@ -1,0 +1,8 @@
+---
+- name: Converge Debian and Ubuntu standalone modes
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Include main role
+      ansible.builtin.include_role:
+        name: cogni-ai.vastai_host

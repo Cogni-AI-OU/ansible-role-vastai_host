@@ -2,8 +2,8 @@
 driver:
   name: docker
 platforms:
-  - name: ubuntu-remote-standalone
-    image: ubuntu:jammy
+  - name: debian-native-placeholder
+    image: debian:latest
 provisioner:
   config_options:
     defaults:
@@ -23,6 +23,6 @@ provisioner:
     prepare: ../default/prepare.yml
     verify: ../default/verify.yml
 scenario:
-  name: ubuntu-remote-standalone
+  name: native-placeholder
 verifier:
   name: ansible

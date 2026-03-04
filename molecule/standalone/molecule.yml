@@ -1,0 +1,45 @@
+---
+driver:
+  name: docker
+platforms:
+  - name: debian-local-standalone
+    image: debian:bookworm
+  - name: ubuntu-remote-standalone
+    image: ubuntu:jammy
+provisioner:
+  config_options:
+    defaults:
+      host_key_checking: false
+      remote_tmp: /tmp/.ansible-tmp-$${USER}
+      result_format: yaml
+      stdout_callback: ansible.builtin.default
+  inventory:
+    group_vars:
+      all:
+        ansible_python_interpreter: auto_silent
+    host_vars:
+      debian-local-standalone:
+        vastai_host_account_identity: dummy-local-standalone-key
+        vastai_host_install_extra_args:
+          - --no-docker
+          - --no-driver
+          - --no-libvirt
+        vastai_host_install_mode: local
+        vastai_host_install_script_run_mode: standalone
+      ubuntu-remote-standalone:
+        vastai_host_account_identity: ''
+        vastai_host_install_location: https://console.vast.ai/install
+        vastai_host_install_mode: remote
+        vastai_host_install_script_run_mode: standalone
+        vastai_host_install_validate_certs: false
+  name: ansible
+  playbooks:
+    converge: converge.yml
+    create: ../default/create.yml
+    destroy: ../default/destroy.yml
+    prepare: ../default/prepare.yml
+    verify: ../default/verify.yml
+scenario:
+  name: standalone
+verifier:
+  name: ansible

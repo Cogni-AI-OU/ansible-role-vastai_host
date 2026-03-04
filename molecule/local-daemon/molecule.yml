@@ -2,7 +2,7 @@
 driver:
   name: docker
 platforms:
-  - name: debian-native-placeholder
+  - name: debian-local-daemon
     image: debian:latest
 provisioner:
   config_options:
@@ -23,6 +23,6 @@ provisioner:
     prepare: ../default/prepare.yml
     verify: ../default/verify.yml
 scenario:
-  name: debian-native-placeholder
+  name: local-daemon
 verifier:
   name: ansible
