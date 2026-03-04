@@ -218,6 +218,7 @@ cython_debug/
 
 # Ansible
 .ansible/
+ansible-role-*
 requirements-local.yml
 
 # Temporary binary files

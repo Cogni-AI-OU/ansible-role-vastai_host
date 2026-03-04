@@ -23,7 +23,7 @@ platforms:
     image: debian:latest
   - name: nixos-latest
     dockerfile: ../resources/playbooks/Dockerfile.j2
-    image: cogni-ai-template-nixos:latest
+    image: cogni-ai-vastai-host-nixos:latest
     base_image: nixos/nix:latest
     pre_build_image: false
   - name: ubuntu-jammy

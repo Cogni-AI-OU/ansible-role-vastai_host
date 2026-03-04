@@ -3,28 +3,28 @@ all:
   children:
     docker_containers:
       hosts:
-        template-on-ubuntu-latest:
+        vastai-host-on-ubuntu-latest:
           ansible_connection: docker
-          ansible_host: template-on-ubuntu-latest
+          ansible_host: vastai-host-on-ubuntu-latest
           ansible_python_interpreter: /usr/bin/python3
-        template-on-ubuntu-noble:
+        vastai-host-on-ubuntu-noble:
           ansible_connection: docker
-          ansible_host: template-on-ubuntu-noble
+          ansible_host: vastai-host-on-ubuntu-noble
           ansible_python_interpreter: /usr/bin/python3
-        template-on-ubuntu-jammy:
+        vastai-host-on-ubuntu-jammy:
           ansible_connection: docker
-          ansible_host: template-on-ubuntu-jammy
+          ansible_host: vastai-host-on-ubuntu-jammy
           ansible_python_interpreter: /usr/bin/python3
-        template-on-debian-latest:
+        vastai-host-on-debian-latest:
           ansible_connection: docker
-          ansible_host: template-on-debian-latest
+          ansible_host: vastai-host-on-debian-latest
           ansible_python_interpreter: /usr/bin/python3
-        template-on-alpine-latest:
+        vastai-host-on-alpine-latest:
           ansible_connection: docker
-          ansible_host: template-on-alpine-latest
+          ansible_host: vastai-host-on-alpine-latest
           ansible_python_interpreter: /usr/bin/python3
-        template-on-nixos-latest:
+        vastai-host-on-nixos-latest:
           ansible_connection: docker
           ansible_distribution: NixOS
-          ansible_host: template-on-nixos-latest
+          ansible_host: vastai-host-on-nixos-latest
           ansible_python_interpreter: /root/.nix-profile/bin/python3

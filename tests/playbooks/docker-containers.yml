@@ -18,10 +18,10 @@
         mode: '0644'
       delegate_to: localhost
       run_once: true  # noqa: run-once[task]
-      when: "'template-on-nixos-latest' in groups['docker_containers']"
+      when: "'vastai-host-on-nixos-latest' in groups['docker_containers']"
       vars:
         item:
-          name: template-on-nixos-latest
+          name: vastai-host-on-nixos-latest
           image: nixos/nix:latest
         ansible_python_interpreter: '{{ controller_python }}'
     - name: Build NixOS image with Python preinstalled
@@ -34,7 +34,7 @@
         force_source: true
       delegate_to: localhost
       run_once: true  # noqa: run-once[task]
-      when: "'template-on-nixos-latest' in groups['docker_containers']"
+      when: "'vastai-host-on-nixos-latest' in groups['docker_containers']"
       vars:
         ansible_python_interpreter: '{{ controller_python }}'
     - name: Ensure container is started
@@ -52,7 +52,7 @@
           if container_image is search('nixos') else omit }}
         recreate: true
         pull: >-
-          {{ not (container_image is search('cogni-ai-template-nixos')) }}
+          {{ not (container_image is search('cogni-ai-vastai-host-nixos')) }}
       delegate_to: localhost
       vars:
         # Use system Python with requests installed for controller-side Docker modules.
@@ -95,18 +95,18 @@
   tags: always
   vars:
     controller_python: '{{ ansible_playbook_python }}'
-    nixos_built_image: cogni-ai-template-nixos:latest
+    nixos_built_image: cogni-ai-vastai-host-nixos:latest
     nixos_dockerfile_output: >-
-      {{ playbook_dir }}/../../molecule/resources/playbooks/Dockerfile.template-on-nixos
+      {{ playbook_dir }}/../../molecule/resources/playbooks/Dockerfile.vastai-host-on-nixos
     nixos_dockerfile_template: >-
       {{ playbook_dir }}/../../molecule/resources/playbooks/Dockerfile.j2
     container_image_map:
-      template-on-alpine-latest: alpine:latest
-      template-on-debian-latest: debian:latest
-      template-on-nixos-latest: '{{ nixos_built_image }}'
-      template-on-ubuntu-jammy: ubuntu:jammy
-      template-on-ubuntu-latest: ubuntu:latest
-      template-on-ubuntu-noble: ubuntu:noble
+      vastai-host-on-alpine-latest: alpine:latest
+      vastai-host-on-debian-latest: debian:latest
+      vastai-host-on-nixos-latest: '{{ nixos_built_image }}'
+      vastai-host-on-ubuntu-jammy: ubuntu:jammy
+      vastai-host-on-ubuntu-latest: ubuntu:latest
+      vastai-host-on-ubuntu-noble: ubuntu:noble
     container_image: "{{ container_image_map[inventory_hostname] | default('ubuntu:latest') }}"
 - name: Install cogni-ai.vastai_host role on all containers
   hosts: docker_containers

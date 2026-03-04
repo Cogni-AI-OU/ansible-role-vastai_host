@@ -13,10 +13,10 @@
         mode: '0644'
       vars:
         item:
-          name: template-on-nixos-latest
+          name: vastai-host-on-nixos-latest
           image: nixos/nix:latest
         ansible_python_interpreter: '{{ controller_python }}'
-      when: "'template-on-nixos-latest' in groups['docker_containers']"
+      when: "'vastai-host-on-nixos-latest' in groups['docker_containers']"
     - name: Build NixOS image with Python preinstalled
       community.docker.docker_image:
         name: '{{ nixos_built_image }}'
@@ -25,7 +25,7 @@
           dockerfile: '{{ nixos_dockerfile_output | basename }}'
         source: build
         force_source: true
-      when: "'template-on-nixos-latest' in groups['docker_containers']"
+      when: "'vastai-host-on-nixos-latest' in groups['docker_containers']"
       vars:
         ansible_python_interpreter: '{{ controller_python }}'
 - name: Ensure Docker containers are up-and-running
@@ -47,7 +47,7 @@
         # NixOS images require privileged mode due to their non-standard filesystem layout
         # and init expectations when run under Docker, especially in CI environments.
         privileged: "{{ container_image is search('nixos') }}"
-        pull: "{{ (container_image is not search('cogni-ai-template-nixos')) | bool }}"
+        pull: "{{ (container_image is not search('cogni-ai-vastai-host-nixos')) | bool }}"
         recreate: true
         # Relaxed seccomp/apparmor for NixOS compatibility.
         security_opts: >-
@@ -97,12 +97,12 @@
   tags: always
   vars:
     container_image_map:
-      template-on-alpine-latest: alpine:latest
-      template-on-debian-latest: debian:latest
-      template-on-nixos-latest: '{{ nixos_built_image }}'
-      template-on-ubuntu-jammy: ubuntu:jammy
-      template-on-ubuntu-latest: ubuntu:latest
-      template-on-ubuntu-noble: ubuntu:noble
+      vastai-host-on-alpine-latest: alpine:latest
+      vastai-host-on-debian-latest: debian:latest
+      vastai-host-on-nixos-latest: '{{ nixos_built_image }}'
+      vastai-host-on-ubuntu-jammy: ubuntu:jammy
+      vastai-host-on-ubuntu-latest: ubuntu:latest
+      vastai-host-on-ubuntu-noble: ubuntu:noble
     container_image: "{{ container_image_map[inventory_hostname] | default('ubuntu:latest') }}"
   vars_files:
     - ../../vars/main.yml
