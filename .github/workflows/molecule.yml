@@ -27,6 +27,9 @@ jobs:
       matrix:
         scenario:
           - default
+          - local-daemon
+          - native-placeholder
+          - standalone
     steps:
       - uses: actions/checkout@v4
         with:
