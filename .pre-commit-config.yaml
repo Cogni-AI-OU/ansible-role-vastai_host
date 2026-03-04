@@ -39,7 +39,7 @@ repos:
     rev: v0.46.0
     hooks:
       - id: markdownlint
-        exclude: files/vast\.ai/
+        exclude: files/vast\.ai/(?!README\.md)
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 3.0.0
     hooks:
