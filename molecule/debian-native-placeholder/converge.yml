@@ -1,0 +1,10 @@
+---
+- name: Converge native placeholder mode
+  hosts: all
+  gather_facts: true
+  vars:
+    vastai_host_install_mode: native
+  tasks:
+    - name: Include main role
+      ansible.builtin.include_role:
+        name: cogni-ai.vastai_host

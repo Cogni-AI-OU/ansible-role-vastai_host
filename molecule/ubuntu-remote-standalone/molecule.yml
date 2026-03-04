@@ -1,0 +1,28 @@
+---
+driver:
+  name: docker
+platforms:
+  - name: ubuntu-remote-standalone
+    image: ubuntu:jammy
+provisioner:
+  config_options:
+    defaults:
+      host_key_checking: false
+      remote_tmp: /tmp/.ansible-tmp-$${USER}
+      result_format: yaml
+      stdout_callback: ansible.builtin.default
+  inventory:
+    group_vars:
+      all:
+        ansible_python_interpreter: auto_silent
+  name: ansible
+  playbooks:
+    converge: converge.yml
+    create: ../default/create.yml
+    destroy: ../default/destroy.yml
+    prepare: ../default/prepare.yml
+    verify: ../default/verify.yml
+scenario:
+  name: ubuntu-remote-standalone
+verifier:
+  name: ansible

@@ -336,6 +336,8 @@ These scripts are automatically deployed by the Ansible role to
 `/var/lib/vastai_kaalia/` on target hosts. The role ensures proper permissions
 and execution capabilities are set.
 
+For manual host setup instructions, see: <https://cloud.vast.ai/host/setup/>
+
 ## Re-sync all scripts
 
 To re-download and replace all files listed in this document, run:

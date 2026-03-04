@@ -1,12 +1,118 @@
 ---
-- name: Apt cleanup ({{ ansible_os_family }})
-  become: "{{ (ansible_user_id is defined and ansible_user_id != 'root') or (lookup('env', 'UID') | int != 0) }}"
-  block:
-    - name: Removes dependencies that are no longer required
-      ansible.builtin.apt:
-        autoremove: true
-        purge: true
-    - name: Cleans Apt cache
-      ansible.builtin.apt:
-        autoclean: true
-        clean: true
+- name: Validate install mode
+  ansible.builtin.assert:
+    that:
+      - vastai_host_install_mode in ['local', 'native', 'remote']
+    fail_msg: >-
+      Unsupported 'vastai_host_install_mode' value '{{ vastai_host_install_mode }}'.
+      Supported values: local, remote, native.
+- name: Validate script run mode
+  ansible.builtin.assert:
+    that:
+      - vastai_host_install_script_run_mode in ['daemon', 'standalone']
+    fail_msg: >-
+      Unsupported 'vastai_host_install_script_run_mode' value '{{ vastai_host_install_script_run_mode }}'.
+      Supported values: standalone, daemon.
+  when: vastai_host_install_mode in ['local', 'remote']
+- name: Set effective account identity
+  ansible.builtin.set_fact:
+    vastai_host_account_identity_effective: '{{ vastai_host_account_identity | trim }}'
+- name: Set install script command arguments
+  ansible.builtin.set_fact:
+    vastai_host_install_command_argv: >-
+      {{
+        [vastai_host_install_python, vastai_host_install_script_destination]
+        + ([vastai_host_account_identity_effective] if vastai_host_account_identity_effective | length > 0 else
+      [])
+        + vastai_host_install_script_run_mode_args[vastai_host_install_script_run_mode]
+        + vastai_host_install_extra_args
+      }}
+  when: vastai_host_install_mode in ['local', 'remote']
+- name: Ensure install script directory exists
+  ansible.builtin.file:
+    path: '{{ vastai_host_install_script_destination | ansible.builtin.dirname }}'
+    state: directory
+    mode: '0755'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+- name: Deploy install script from role files
+  ansible.builtin.copy:
+    src: '{{ vastai_host_install_location | regex_replace("^files/", "") }}'
+    dest: '{{ vastai_host_install_script_destination }}'
+    mode: '0755'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode == 'local'
+- name: Download install script from remote URL
+  ansible.builtin.get_url:
+    url: '{{ vastai_host_install_location }}'
+    dest: '{{ vastai_host_install_script_destination }}'
+    mode: '0755'
+    validate_certs: '{{ vastai_host_install_validate_certs }}'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode == 'remote'
+- name: Ensure scripted mode data directory exists
+  ansible.builtin.file:
+    path: /var/lib/vastai_kaalia
+    state: directory
+    mode: '0755'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+- name: Run install script
+  ansible.builtin.command:
+    argv: '{{ vastai_host_install_command_argv }}'
+    creates: /var/lib/vastai_kaalia/.ansible_vastai_install_done
+  become: '{{ ansible_user_id != "root" }}'
+  register: vastai_host_install_run_result
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+- name: Mark scripted install completion
+  ansible.builtin.copy:
+    content: completed\n
+    dest: /var/lib/vastai_kaalia/.ansible_vastai_install_done
+    mode: '0644'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+    - vastai_host_install_run_result is defined
+    - vastai_host_install_run_result is changed
+- name: Skip install script when account identity is missing
+  ansible.builtin.debug:
+    msg: >-
+      Skipping Vast.ai installer execution because 'vastai_host_account_identity' is empty.
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length == 0
+- name: Ensure native mode data directory exists
+  ansible.builtin.file:
+    path: /var/lib/vastai_kaalia
+    state: directory
+    mode: '0755'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode == 'native'
+- name: Create native mode placeholder marker
+  ansible.builtin.copy:
+    content: |
+      Native mode is a placeholder.
+      Future work will replace this marker with full Ansible task-based install logic.
+    dest: /var/lib/vastai_kaalia/native_install_placeholder.txt
+    mode: '0644'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode == 'native'

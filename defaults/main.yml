@@ -1,2 +1,17 @@
 ---
-...
+vastai_host_account_identity: ''
+vastai_host_install_execute: true
+vastai_host_install_extra_args:
+  - --no-driver
+  - --no-libvirt
+vastai_host_install_location: files/vast.ai/install.py
+vastai_host_install_mode: local
+vastai_host_install_python: python3
+vastai_host_install_script_destination: /usr/local/src/vastai-install.py
+vastai_host_install_script_run_mode: standalone
+vastai_host_install_script_run_mode_args:
+  daemon:
+    - --no-docker
+  standalone:
+    - --no-daemon
+vastai_host_install_validate_certs: true

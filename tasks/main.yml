@@ -1,4 +1,11 @@
 ---
+- name: Include Debian and Ubuntu tasks
+  ansible.builtin.include_tasks:
+    apply:
+      tags: vastai_host-setup
+    file: Debian.yml
+  when: ansible_os_family == 'Debian'
+  tags: vastai_host-setup
 - name: Verify installation
   ansible.builtin.include_tasks:
     apply:

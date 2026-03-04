@@ -15,6 +15,7 @@
         "pre-commit": true,
         "awk": true,
         "npx markdownlint-cli": true,
-        "molecule": true
+        "molecule": true,
+        "set": true
     }
 }

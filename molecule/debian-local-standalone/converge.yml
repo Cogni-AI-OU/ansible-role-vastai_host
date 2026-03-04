@@ -1,0 +1,16 @@
+---
+- name: Converge local standalone mode
+  hosts: all
+  gather_facts: true
+  vars:
+    vastai_host_account_identity: dummy-local-standalone-key
+    vastai_host_install_extra_args:
+      - --no-docker
+      - --no-driver
+      - --no-libvirt
+    vastai_host_install_mode: local
+    vastai_host_install_script_run_mode: standalone
+  tasks:
+    - name: Include main role
+      ansible.builtin.include_role:
+        name: cogni-ai.vastai_host

@@ -1,2 +1,53 @@
 ---
-...
+- name: Check machine_id file
+  ansible.builtin.stat:
+    path: /var/lib/vastai_kaalia/machine_id
+  register: vastai_host_machine_id_stat
+  when:
+    - ansible_os_family == 'Debian'
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - (vastai_host_account_identity | trim) | length > 0
+- name: Check update launcher file
+  ansible.builtin.stat:
+    path: /var/lib/vastai_kaalia/update_launcher.sh
+  register: vastai_host_update_launcher_stat
+  when:
+    - ansible_os_family == 'Debian'
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - (vastai_host_account_identity | trim) | length > 0
+- name: Check deployed install script
+  ansible.builtin.stat:
+    path: '{{ vastai_host_install_script_destination }}'
+  register: vastai_host_install_script_stat
+  when:
+    - ansible_os_family == 'Debian'
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+- name: Check native placeholder file
+  ansible.builtin.stat:
+    path: /var/lib/vastai_kaalia/native_install_placeholder.txt
+  register: vastai_host_native_placeholder_stat
+  when:
+    - ansible_os_family == 'Debian'
+    - vastai_host_install_execute
+    - vastai_host_install_mode == 'native'
+- name: Assert scripted install artifacts
+  ansible.builtin.assert:
+    that:
+      - vastai_host_install_script_stat.stat.exists
+    fail_msg: Scripted Vast.ai install did not deploy the installer script.
+  when:
+    - ansible_os_family == 'Debian'
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+- name: Assert native placeholder marker
+  ansible.builtin.assert:
+    that:
+      - vastai_host_native_placeholder_stat.stat.exists
+    fail_msg: Native placeholder mode did not create its marker file.
+  when:
+    - ansible_os_family == 'Debian'
+    - vastai_host_install_execute
+    - vastai_host_install_mode == 'native'

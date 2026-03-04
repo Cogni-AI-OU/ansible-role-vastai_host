@@ -1,0 +1,28 @@
+---
+driver:
+  name: docker
+platforms:
+  - name: debian-local-standalone
+    image: debian:bookworm
+provisioner:
+  config_options:
+    defaults:
+      host_key_checking: false
+      remote_tmp: /tmp/.ansible-tmp-$${USER}
+      result_format: yaml
+      stdout_callback: ansible.builtin.default
+  inventory:
+    group_vars:
+      all:
+        ansible_python_interpreter: auto_silent
+  name: ansible
+  playbooks:
+    converge: converge.yml
+    create: ../default/create.yml
+    destroy: ../default/destroy.yml
+    prepare: ../default/prepare.yml
+    verify: ../default/verify.yml
+scenario:
+  name: debian-local-standalone
+verifier:
+  name: ansible

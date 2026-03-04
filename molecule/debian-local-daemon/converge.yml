@@ -1,0 +1,13 @@
+---
+- name: Converge local daemon mode
+  hosts: all
+  gather_facts: true
+  vars:
+    vastai_host_account_identity: dummy-local-daemon-key
+    vastai_host_install_execute: false
+    vastai_host_install_mode: local
+    vastai_host_install_script_run_mode: daemon
+  tasks:
+    - name: Include main role
+      ansible.builtin.include_role:
+        name: cogni-ai.vastai_host
