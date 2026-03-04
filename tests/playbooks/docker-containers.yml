@@ -11,32 +11,45 @@
   gather_facts: false
   hosts: docker_containers
   pre_tasks:
-    - name: Ensure container is started
-      community.docker.docker_container:
-        name: '{{ inventory_hostname }}'
-        image: '{{ container_image }}'
-        state: started
-        command: sleep infinity
-        recreate: true
-        pull: true
+    - name: Remove existing container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - rm
+          - --force
+          - '{{ inventory_hostname }}'
       delegate_to: localhost
-      vars:
-        # Use system Python with requests installed for controller-side Docker modules.
-        ansible_python_interpreter: '{{ controller_python }}'
+      failed_when: false
+      changed_when: false
+    - name: Ensure container is started
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --detach
+          - --pull
+          - always
+          - --name
+          - '{{ inventory_hostname }}'
+          - '{{ container_image }}'
+          - sleep
+          - infinity
+      delegate_to: localhost
+      changed_when: false
     - name: Wait for container to be ready
-      community.docker.docker_container_info:
-        name: '{{ inventory_hostname }}'
+      ansible.builtin.command:
+        argv:
+          - docker
+          - inspect
+          - '{{ inventory_hostname }}'
       register: container_info
       until:
         - container_info is defined
-        - container_info.container.State.Running | default(false) | bool
+        - (container_info.stdout | from_json | first).State.Running | default(false) | bool
       changed_when: false
       delay: 2
       delegate_to: localhost
       retries: 10
-      vars:
-        # Use system Python with requests installed for controller-side Docker modules.
-        ansible_python_interpreter: '{{ controller_python }}'
     - name: Install Python 3 on Ubuntu/Debian
       ansible.builtin.raw: |
         test -e "{{ ansible_python_interpreter }}" || (apt-get update && apt-get install -y python3 python3-pip)
@@ -55,7 +68,6 @@
       when: container_image is search("ubuntu") or container_image is search("debian")
   tags: always
   vars:
-    controller_python: '{{ ansible_playbook_python }}'
     container_image_map:
       vastai-host-on-debian-latest: debian:latest
       vastai-host-on-ubuntu-jammy: ubuntu:jammy
@@ -66,16 +78,17 @@
   hosts: docker_containers
   gather_facts: true
   tags: always
-  vars:
-    controller_python: '{{ ansible_playbook_python }}'
   tasks:
     - name: Installs cogni-ai.vastai_host role
       ansible.builtin.import_role:
         name: cogni-ai.vastai_host
   post_tasks:
     - name: Stop Docker containers
-      community.docker.docker_container:
-        name: '{{ inventory_hostname }}'
-        state: stopped
+      ansible.builtin.command:
+        argv:
+          - docker
+          - stop
+          - '{{ inventory_hostname }}'
       delegate_to: localhost
+      changed_when: false
       failed_when: false

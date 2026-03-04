@@ -17,6 +17,7 @@
         "npx markdownlint-cli": true,
         "molecule": true,
         "set": true,
-        "ansible-playbook": true
+        "ansible-playbook": true,
+        "ansible-lint": true
     }
 }
