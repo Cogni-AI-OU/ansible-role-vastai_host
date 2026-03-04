@@ -1,0 +1,33 @@
+---
+# See https://ansible.readthedocs.io/projects/lint/configuring/
+# for more information about configuration options.
+
+# Offline mode - skip collection install if network is unavailable
+# This is useful in sandboxed CI environments
+offline: false
+# Skip specific rules if needed
+# skip_list:
+#   - yaml[line-length]
+# Exclude paths from linting
+exclude_paths:
+  - .cache/
+  - .github/
+  - .tox/
+  - molecule/
+  - venv/
+# Enable specific rules
+enable_list:
+  - no-changed-when
+  - no-handler
+  - no-relative-paths
+# Warn on specific rules instead of failing
+warn_list:
+  - experimental
+  - role-name
+# Mock modules and roles to avoid collection dependencies during lint
+mock_modules:
+  - community.docker.docker_container
+  - community.docker.docker_container_info
+  - community.docker.docker_image
+  - community.general.apk
+mock_roles: []

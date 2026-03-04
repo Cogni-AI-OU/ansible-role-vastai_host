@@ -1,0 +1,99 @@
+---
+# See: <https://github.com/anthropics/claude-code-action>
+# Docs: <https://github.com/anthropics/claude-code-action/tree/main/docs>
+# Examples: <https://github.com/anthropics/claude-code-action/tree/main/examples>
+# Note: Keep keys and envs in alphabetical order.
+name: Claude Code
+on:
+  issue_comment:
+    types:
+      - created
+      - edited
+  pull_request_review_comment:
+    types:
+      - created
+      - edited
+  issues:
+    types:
+      - opened
+  pull_request_review:
+    types:
+      - submitted
+  workflow_call:
+    inputs:
+      agent:
+        description: 'Agent configuration to use'
+        required: false
+        type: string
+        default: 'default'
+      issue_number:
+        description: 'Issue number to operate on (provide either issue_number or pr_number)'
+        required: false
+        type: number
+      model:
+        description: 'Claude model to use'
+        required: false
+        type: string
+        default: 'claude-opus-4-5'
+      pr_number:
+        description: 'Pull request number to operate on (provide either issue_number or pr_number)'
+        required: false
+        type: number
+      prompt:
+        description: 'Prompt for Claude to execute'
+        required: false
+        type: string
+        default: ''
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: 'Agent configuration to use'
+        required: false
+        type: choice
+        options:
+          - default
+          - code-tour
+          - copilot-plus
+        default: 'default'
+      issue_number:
+        description: 'Issue number to operate on (provide either issue_number or pr_number)'
+        required: false
+        type: number
+      model:
+        description: 'Claude model to use'
+        required: false
+        type: string
+        default: 'claude-opus-4-5'
+      pr_number:
+        description: 'Pull request number to operate on (provide either issue_number or pr_number)'
+        required: false
+        type: number
+      prompt:
+        description: 'Prompt for Claude to execute'
+        required: false
+        type: string
+        default: ''
+permissions:
+  actions: read
+  contents: write
+  id-token: write
+  issues: write
+  pull-requests: write
+jobs:
+  claude:
+    # See: https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows
+    uses: Cogni-AI-OU/.github/.github/workflows/claude.yml@main
+    # Job-level permissions are passed to the reusable workflow
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
+    secrets: inherit  # pragma: allowlist secret
+    with:
+      agent: ${{ inputs.agent || 'default' }}
+      issue_number: ${{ inputs.issue_number }}
+      model: ${{ inputs.model || 'claude-opus-4-5' }}
+      pr_number: ${{ inputs.pr_number || github.event.pull_request.number }}
+      prompt: ${{ inputs.prompt || '' }}

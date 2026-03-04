@@ -1,0 +1,30 @@
+---
+all:
+  children:
+    docker_containers:
+      hosts:
+        template-on-ubuntu-latest:
+          ansible_connection: docker
+          ansible_host: template-on-ubuntu-latest
+          ansible_python_interpreter: /usr/bin/python3
+        template-on-ubuntu-noble:
+          ansible_connection: docker
+          ansible_host: template-on-ubuntu-noble
+          ansible_python_interpreter: /usr/bin/python3
+        template-on-ubuntu-jammy:
+          ansible_connection: docker
+          ansible_host: template-on-ubuntu-jammy
+          ansible_python_interpreter: /usr/bin/python3
+        template-on-debian-latest:
+          ansible_connection: docker
+          ansible_host: template-on-debian-latest
+          ansible_python_interpreter: /usr/bin/python3
+        template-on-alpine-latest:
+          ansible_connection: docker
+          ansible_host: template-on-alpine-latest
+          ansible_python_interpreter: /usr/bin/python3
+        template-on-nixos-latest:
+          ansible_connection: docker
+          ansible_distribution: NixOS
+          ansible_host: template-on-nixos-latest
+          ansible_python_interpreter: /root/.nix-profile/bin/python3

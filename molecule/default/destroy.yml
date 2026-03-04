@@ -1,0 +1,29 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    # Use controller Python (Ansible's interpreter)
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+    controller_pip: pip3
+  pre_tasks:
+    - name: Ensure requests is installed on controller
+      ansible.builtin.pip:
+        name: requests
+        state: present
+        executable: '{{ controller_pip }}'
+  tasks:
+    - name: Stop and remove test containers
+      community.docker.docker_container:
+        name: '{{ item.name }}'
+        state: absent
+        force_kill: true
+      loop: '{{ molecule_yml.platforms }}'
+    - name: Reset instance config
+      ansible.builtin.copy:
+        # Bug: <lyz-code/yamlfix/issues/278>
+        content: |
+          {{ '# Molecule managed\n\n[]' }}
+        dest: '{{ molecule_instance_config }}'
+        mode: '0600'

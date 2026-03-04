@@ -1,0 +1,7 @@
+---
+- name: Verify installation
+  ansible.builtin.include_tasks:
+    apply:
+      tags: template-verify
+    file: verify.yml
+  tags: template-verify

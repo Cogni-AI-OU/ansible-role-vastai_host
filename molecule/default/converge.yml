@@ -1,0 +1,9 @@
+---
+# Molecule calls this playbook with `molecule converge`.
+- name: Converge
+  hosts: all
+  gather_facts: true  # Disable if your role does not rely on facts
+  tasks:
+    - name: Include main role
+      ansible.builtin.include_role:
+        name: cogni-ai.template

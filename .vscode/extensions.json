@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "vsls-contrib.codetour",
+    "DavidAnson.vscode-markdownlint",
+    "GitHub.copilot",
+    "GitHub.copilot-chat"
+  ]
+}

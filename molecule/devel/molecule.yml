@@ -1,0 +1,36 @@
+---
+driver:
+  name: docker
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+platforms:
+  - name: alpine-latest
+    image: i386/alpine:latest
+  - name: debian-latest
+    image: debian:latest
+  - name: ubuntu-jammy
+    image: ubuntu:jammy
+  - name: ubuntu-noble
+    image: ubuntu:noble
+  - name: ubuntu-latest
+    image: ubuntu:latest
+provisioner:
+  config_options:
+    defaults:
+      # Use the built-in default callback with result_format instead of community.general.yaml
+      stdout_callback: ansible.builtin.default
+      result_format: yaml
+      remote_tmp: /tmp/.ansible-tmp-$${USER}
+  name: ansible
+  inventory:
+    group_vars:
+      all:
+        ansible_python_interpreter: auto_silent
+  playbooks:
+    converge: ../default/converge.yml
+    prepare: ../default/prepare.yml
+    verify: ../default/verify.yml
+verifier:
+  name: ansible
