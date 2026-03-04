@@ -1,100 +1,80 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Getting Started with Ansible Role Template",
-  "description": "A comprehensive walkthrough of the repository structure, Ansible role development, and contribution guidelines",
+  "title": "Getting Started with ansible-role-vastai_host",
+  "description": "Guided walkthrough of the current role implementation, test paths, and contributor workflow",
   "isPrimary": true,
   "steps": [
     {
-      "title": "Welcome!",
-      "description": "# Welcome to the Ansible Role Template Repository! 🎉\n\nThis code tour will guide you through the repository structure and help you understand how to create and maintain Ansible roles using this template.\n\n## What You'll Learn\n\n- Ansible role structure and organization\n- Development environment setup with devcontainer\n- Role variables, tasks, handlers, and metadata\n- Testing approaches (Docker and Molecule)\n- Coding standards and best practices\n- Contribution workflow\n\nLet's get started!"
+      "title": "Welcome",
+      "description": "# Welcome to `ansible-role-vastai_host`\n\nThis tour walks through the live role, not a generic template.\n\n## What this role currently focuses on\n\n- Vast.ai host manager installation flow\n- Debian/Ubuntu test targets\n- Mode-based install logic (`local`, `remote`, `native`)\n- Docker and Molecule validation paths"
     },
     {
-      "title": "Project Overview",
-      "description": "## About This Template\n\nThis is a template repository for creating Ansible roles following best practices and industry standards.\n\n### Key Features:\n\n- **Standard Ansible Role Structure**: Follows the official Ansible Galaxy role layout\n- **Multi-Platform Support**: Alpine, Debian/Ubuntu, NixOS\n- **Comprehensive Testing**: Docker-based tests and Molecule framework\n- **Pre-configured Devcontainer**: Consistent development environment with VS Code\n- **Automated Quality Checks**: Pre-commit hooks for linting and validation\n- **GitHub Actions Integration**: CI/CD for automated testing\n\n### Use Case:\n\nUse this template as a starting point when creating new Ansible roles. It provides the scaffolding, testing infrastructure, and quality tools needed for professional role development.",
+      "title": "Repository Entry Point",
+      "description": "Start with the README for supported OS details, install instructions, and test commands.",
       "file": "README.md",
       "line": 1
     },
     {
-      "title": "Role Metadata",
-      "description": "## Role Metadata Configuration\n\nThe `meta/main.yml` file contains critical information about your Ansible role:\n\n### Key Metadata:\n\n- **Author**: Cogni AI\n- **License**: MIT\n- **Role Name**: template (change this for your role)\n- **Namespace**: cogni-ai (for Ansible Galaxy)\n- **Min Ansible Version**: 2.7\n\n### Supported Platforms:\n\n- Alpine Linux (all versions)\n- Debian (bullseye, buster, stretch)\n- Ubuntu (bionic, focal, xenial)\n\n### Important:\n\nWhen creating a new role from this template:\n1. Update `role_name` to match your role's purpose\n2. Update the `description` field\n3. Adjust supported platforms if needed\n4. Update `galaxy_tags` for discoverability\n\nThis metadata is used by Ansible Galaxy when publishing your role.",
-      "file": "meta/main.yml",
+      "title": "Role Defaults",
+      "description": "`defaults/main.yml` defines the role API.\n\nPay attention to:\n\n- `vastai_host_install_mode` (`local`, `remote`, `native`)\n- `vastai_host_install_location` for local file or remote URL\n- `vastai_host_install_script_run_mode` (`standalone` or `daemon`)\n- `vastai_host_install_extra_args` and `vastai_host_account_identity`",
+      "file": "defaults/main.yml",
       "line": 1
     },
     {
-      "title": "Role Variables",
-      "description": "## Default Variables\n\nThe `defaults/main.yml` file defines default values for role variables that users can override.\n\n### Best Practices:\n\n- Keep defaults minimal and sensible\n- Document all variables with inline comments\n- Use descriptive variable names with the role name as prefix\n- Organize variables logically (by feature or component)\n- Provide examples for complex data structures\n\n### Template Note:\n\nThis template has an empty defaults file - you'll add your role-specific variables here as you develop the role.\n\n### Example Structure:\n\n```yaml\n# Package management\nmy_role_package_state: present\nmy_role_packages:\n  - package1\n  - package2\n\n# Configuration\nmy_role_config_path: /etc/myapp/config.yml\nmy_role_enable_feature: true\n```",
-      "file": "defaults/main.yml"
-    },
-    {
-      "title": "Role Tasks",
-      "description": "## Main Task Entry Point\n\nThe `tasks/main.yml` file is the entry point for role execution.\n\n### Current Structure:\n\nThis template includes a verification task that demonstrates:\n- Using `ansible.builtin.include_tasks` for task organization\n- Applying tags for selective execution\n- Modular task organization\n\n### Best Practices:\n\n- Break complex roles into multiple task files\n- Use meaningful task names starting with action verbs\n- Apply tags for selective execution\n- Use fully qualified collection names (FQCN) for all modules\n- Keep tasks idempotent\n- Group related tasks in separate files\n\n### Common Patterns:\n\n```yaml\n- name: Include OS-specific variables\n  ansible.builtin.include_vars: \"{{ ansible_os_family }}.yml\"\n\n- name: Include installation tasks\n  ansible.builtin.include_tasks: install.yml\n\n- name: Include configuration tasks\n  ansible.builtin.include_tasks: configure.yml\n```",
+      "title": "Task Routing",
+      "description": "`tasks/main.yml` is the role entry point.\n\nIt routes to Debian-family implementation and then verification tasks.",
       "file": "tasks/main.yml",
       "line": 1
     },
     {
-      "title": "OS-Specific Tasks",
-      "description": "## Platform-Specific Task Files\n\nThe `tasks/` directory contains task files for supported platforms:\n\n### Available Platform Files:\n\n- **Debian.yml**: Tasks for Debian/Ubuntu systems\n- **verify.yml**: Verification tasks for testing\n\n### Usage Pattern:\n\n```yaml\n- name: Include OS-specific tasks\n  ansible.builtin.include_tasks: Debian.yml\n  when: ansible_os_family == 'Debian'\n```\n\n### Best Practices:\n\n- Keep platform-specific logic in separate files\n- Use `ansible_os_family` or `ansible_distribution` for selection\n- Add `when` conditions for clarity\n- Document any platform-specific requirements",
-      "directory": "tasks"
-    },
-    {
-      "title": "Role Handlers",
-      "description": "## Handlers for Service Management\n\nThe `handlers/main.yml` file defines handlers - tasks that run when notified by other tasks.\n\n### Common Use Cases:\n\n- Restarting services after configuration changes\n- Reloading configurations\n- Running validation checks\n- Triggering dependent service updates\n\n### Example Handler Pattern:\n\n```yaml\n---\n- name: Restart service\n  ansible.builtin.service:\n    name: myservice\n    state: restarted\n\n- name: Reload configuration\n  ansible.builtin.service:\n    name: myservice\n    state: reloaded\n```\n\n### Best Practices:\n\n- Use descriptive handler names\n- Keep handlers idempotent\n- Handlers only run once per play, even if notified multiple times\n- Use `listen` for grouping multiple handlers under one name",
-      "file": "handlers/main.yml"
-    },
-    {
-      "title": "Development Environment Setup",
-      "description": "## VS Code Devcontainer Configuration\n\nThis project uses VS Code's devcontainer for a consistent development environment.\n\n### Base Configuration:\n\n- **Image**: Ubuntu Jammy (22.04)\n- **Remote User**: vscode (non-root)\n\n### Pre-installed Tools:\n\n- **Python**: For Ansible and testing\n- **Docker**: For container-based testing\n- **Make**: For build automation\n- **Ripgrep**: Fast code search\n- **GitHub CLI (gh)**: For GitHub integration\n- **Ansible**: Installed via pipx\n- **Pre-commit**: For automated code quality checks\n\n### VS Code Extensions:\n\n- **Markdownlint**: Markdown formatting\n- **Copilot**: AI-powered code assistance\n- **Vim**: Vim keybindings (optional)\n- **Clang-format**: Code formatting\n\n### Setup Commands:\n\n```bash\n# Runs automatically on container creation\npip install -r .devcontainer/requirements.txt\npre-commit install\n```\n\n**Tip**: Open this repo in VS Code and select \"Reopen in Container\" for instant setup!",
-      "file": ".devcontainer/devcontainer.json",
+      "title": "Debian Implementation",
+      "description": "`tasks/Debian.yml` contains the core behavior.\n\nHighlights:\n\n- Validates install mode and run mode\n- Builds command argv deterministically\n- Supports `local` and `remote` installer sourcing\n- Uses native-mode placeholder marker for future expansion\n- Uses marker files for idempotent scripted execution",
+      "file": "tasks/Debian.yml",
       "line": 1
     },
     {
-      "title": "GitHub Copilot Instructions",
-      "description": "## Copilot Configuration for the Project\n\nThis file provides context-aware instructions to GitHub Copilot when working in this repository.\n\n### Key Guidelines Defined:\n\n#### Python Standards:\n- Use Python 3.11+\n- Follow PEP 8 style guidelines\n- Use `uv` for dependency management\n- Use `argparse` for CLI tools\n\n#### Formatting:\n- Markdown: Follow `.github/instructions/markdown.instructions.md`\n- YAML: Follow `.github/instructions/yaml.instructions.md`\n- Test with: `pre-commit run markdownlint -a` or `pre-commit run yamllint -a`\n\n#### Project Notes:\n- Uses Codespaces with devcontainer\n- GitHub Actions run pre-commit checks\n- Verify locally with `pre-commit run -a`\n\n### Purpose:\n\nThese instructions help Copilot:\n- Generate code following project conventions\n- Suggest appropriate tools and patterns\n- Maintain consistency across the codebase",
-      "file": ".github/copilot-instructions.md",
+      "title": "Verification Tasks",
+      "description": "`tasks/verify.yml` contains assertions used by test flows to validate expected artifacts per mode.",
+      "file": "tasks/verify.yml",
       "line": 1
     },
     {
-      "title": "Detailed Coding Instructions",
-      "description": "## Repository-Wide Coding Standards\n\nThe `.github/instructions/` directory contains detailed guidelines for different file types.\n\n### Available Instruction Files:\n\n#### 1. **ansible.instructions.md**\n   - Ansible best practices and conventions\n   - Task naming, idempotency, FQCN usage\n   - Secret management approaches\n   - Style guidelines and linting\n\n#### 2. **markdown.instructions.md**\n   - Markdown formatting rules\n   - Line length (120 chars)\n   - Heading structure (H2, H3)\n   - Code block requirements\n\n#### 3. **yaml.instructions.md**\n   - YAML formatting standards\n   - Indentation (2 spaces)\n   - Line length limits\n   - Boolean and structure rules\n\n#### 4. **readme.instructions.md**\n   - README-specific guidelines\n   - Badge formatting\n   - Required sections\n   - TOC requirements\n\n#### 5. **blog.instructions.md**\n   - Blog post requirements\n   - Front matter structure\n   - Image guidelines\n\n### Integration:\n\nThese files use `applyTo` frontmatter to scope rules to specific file patterns and integrate with GitHub Copilot for context-aware assistance.",
-      "directory": ".github/instructions"
-    },
-    {
-      "title": "Pre-commit Hooks",
-      "description": "## Automated Code Quality Checks\n\nThe `.pre-commit-config.yaml` defines hooks that run before each commit to ensure code quality.\n\n### Linters & Formatters:\n\n- **yamllint**: YAML syntax and style validation\n- **ansible-lint**: Ansible best practices (v25.12.2)\n- **markdownlint**: Markdown formatting\n- **black**: Python code formatting (v25.1.0)\n- **flake8**: Python linting\n- **j2lint**: Jinja2 template validation\n\n### Security & Quality:\n\n- **gitleaks**: Secret detection (v8.24.2)\n- **detect-secrets**: Credential scanning\n- **codespell**: Spell checking\n\n### Pre-commit Hooks:\n\n- Check for large files\n- Fix trailing whitespace\n- Ensure files end with newline\n- Check for merge conflicts\n- Validate YAML syntax\n- Ensure executables have shebangs\n\n### Running Manually:\n\n```bash\n# Run all hooks on all files\npre-commit run --all-files\n\n# Run specific hook\npre-commit run yamllint -a\npre-commit run ansible-lint -a\npre-commit run markdownlint -a\n\n# Install hooks\npre-commit install\n```",
-      "file": ".pre-commit-config.yaml",
+      "title": "Docker Test Playbook",
+      "description": "`tests/playbooks/docker-containers.yml` provisions Debian/Ubuntu containers and runs this role end-to-end.\n\nUse this when iterating quickly outside of Molecule.",
+      "file": "tests/playbooks/docker-containers.yml",
       "line": 1
     },
     {
-      "title": "Ansible Configuration",
-      "description": "## Ansible Settings\n\nThe `ansible.cfg` file configures Ansible's behavior for this role.\n\n### Key Settings:\n\n#### [defaults] Section:\n\n- **bin_ansible_callbacks**: Enable callbacks for ad-hoc commands\n- **nocows**: Disable ASCII cow output (professional output)\n- **stdout_callback**: Use built-in default callback\n- **callback_result_format**: YAML format for readable output\n\n#### [diff] Section:\n\n- **always**: Always show diffs (same as using `-D`/`--diff` flag)\n\n### Purpose:\n\nThis configuration ensures:\n- Consistent output format across environments\n- Clear visibility of changes during execution\n- Professional, readable output\n- Easier debugging with automatic diffs\n\n### Testing Impact:\n\nWhen running playbooks or tests, you'll automatically see:\n- Changes being made to files\n- Configuration differences\n- Task execution results in YAML format",
-      "file": "ansible.cfg",
+      "title": "Test Inventory",
+      "description": "`tests/inventory/docker-containers.yml` defines named test targets used by the Docker playbooks.",
+      "file": "tests/inventory/docker-containers.yml",
       "line": 1
     },
     {
-      "title": "Docker-Based Testing",
-      "description": "## Testing with Docker Containers\n\nThe `tests/` directory provides infrastructure for testing roles against different operating systems using Docker.\n\n### Test Structure:\n\n- **inventory/**: Test inventory files defining target containers\n- **playbooks/**: Test playbooks for different scenarios\n- **vars/**: Test variables\n\n### Running Docker Tests:\n\n```bash\n# Step 1: Install role dependencies\nansible-galaxy install -r requirements.yml\njinja2 requirements-local.yml.j2 -D \"pwd=$PWD\" -o requirements-local.yml\nansible-galaxy install -r requirements-local.yml\n\n# Alternative for development: use symbolic link\n# Alternative for development: use symbolic link
-ln -vs \"$PWD\" ~/.ansible/roles/cogni-ai.vastai_host\n\n# Step 2: Ensure Docker is running\n# (Docker Desktop or Docker service)\n\n# Step 3: Run the test playbook\nansible-playbook -i tests/inventory/docker-containers.yml \\\n  tests/playbooks/docker-containers.yml\n\n# Step 4: Verify and cleanup\nansible-playbook -i tests/inventory/docker-containers.yml \\\n  tests/playbooks/tags/verify.yml --tags verify\n```\n\n### Benefits:\n\n- Test against multiple OS distributions\n- Isolated, reproducible environments\n- No impact on host system\n- Fast iteration cycles",
-      "directory": "tests"
-    },
-    {
-      "title": "Molecule Testing Framework",
-      "description": "## Advanced Testing with Molecule\n\nMolecule is a testing framework designed for Ansible roles, providing comprehensive testing capabilities.\n\n### Directory Structure:\n\n- **default/**: Default test scenario\n  - `molecule.yml`: Molecule configuration\n  - `converge.yml`: Main playbook to apply role\n  - `verify.yml`: Verification tests\n  - `prepare.yml`: Pre-test setup\n  - `create.yml`: Instance creation\n  - `destroy.yml`: Cleanup\n\n### Test Scenarios:\n\n- **default**: Standard testing scenario\n- **devel**: Development/experimental testing\n\n### Running Molecule Tests:\n\n```bash\n# Run full test cycle\nmolecule test\n\n# Run tests for specific scenario\nmolecule test -s devel\n\n# Individual test phases\nmolecule create      # Create test instances\nmolecule converge    # Apply the role\nmolecule verify      # Run verification tests\nmolecule destroy     # Cleanup\n\n# Useful for development\nmolecule converge    # Apply changes\nmolecule verify      # Test without destroying\n```\n\n### Advantages:\n\n- Full test lifecycle management\n- Multiple test scenarios\n- Integration with various backends (Docker, Vagrant, etc.)\n- Automated verification\n- Industry standard for role testing",
+      "title": "Molecule Scenarios",
+      "description": "The `molecule/` folder now includes scenario directories:\n\n- `default`\n- `devel`\n- `standalone`\n- `local-daemon`\n- `native-placeholder`\n\nUse scenario-specific vars to cover different role modes.",
       "directory": "molecule"
     },
     {
-      "title": "Requirements Management",
-      "description": "## Role Dependencies\n\nThis template uses multiple files for managing Ansible role dependencies:\n\n### requirements.yml\n\nDefines external Ansible roles and collections needed by this role:\n- Listed in Ansible Galaxy format\n- Installed via `ansible-galaxy install -r requirements.yml`\n- Used for production dependencies\n\n### requirements-local.yml.j2\n\nJinja2 template for local development:\n- Creates a local requirements file pointing to the current working directory\n- Enables testing the role without installing it\n- Generated with: `jinja2 requirements-local.yml.j2 -D \"pwd=$PWD\" -o requirements-local.yml`\n\n### Best Practices:\n\n```yaml\n# requirements.yml example\n---\nroles:\n  - name: geerlingguy.docker\n    version: 7.0.0\n\ncollections:\n  - name: community.general\n    version: 8.0.0\n```\n\n### Development Tip:\n\nFor faster iteration, use symbolic links:\n```bash\nln -vs \"$PWD\" ~/.ansible/roles/cogni-ai.yourrolename\n```",
-      "file": "requirements.yml"
-    },
-    {
-      "title": "Contributing Guidelines",
-      "description": "## How to Contribute\n\nThe `CONTRIBUTING.md` file outlines the process for contributing to this role.\n\n### Key Points:\n\n#### Bug Reports:\n- Use GitHub Issues to report bugs\n- Provide clear reproduction steps\n- Include relevant system information\n\n#### Code Contributions:\n- Follow coding conventions (2-space indentation)\n- Write readable, maintainable code\n- Submit changes via Pull Requests\n\n#### Testing Requirements:\n- All code must pass CI tests\n- GitHub Actions automatically run pre-commit hooks\n- Test locally before submitting:\n  ```bash\n  pre-commit run --all-files\n  molecule test\n  ```\n\n#### Code Review:\n- Maintainers will review your PR\n- Address feedback promptly\n- Keep changes focused and atomic\n\n### Contribution Workflow:\n\n1. Fork the repository\n2. Create a feature branch\n3. Make your changes\n4. Run tests locally\n5. Commit with clear messages\n6. Push to your fork\n7. Open a Pull Request\n8. Respond to review feedback",
-      "file": ".github/CONTRIBUTING.md",
+      "title": "Standalone Scenario",
+      "description": "Open this scenario for a concrete multi-container run where Debian/Ubuntu standalone behavior is exercised together.",
+      "file": "molecule/standalone/molecule.yml",
       "line": 1
     },
     {
-      "title": "Next Steps",
-      "description": "# Congratulations! 🎊\n\nYou've completed the tour of the Ansible Role Template repository!\n\n## What to Do Next:\n\n### 1. Clone and Customize\n```bash\n# Use this template to create a new role\n# Click \"Use this template\" on GitHub\n# Or clone and modify\ngit clone https://github.com/Cogni-AI-OU/ansible-role-template.git my-new-role\ncd my-new-role\n```\n\n### 2. Update Metadata\n- Edit `meta/main.yml` - change role_name, description, tags\n- Update `README.md` - describe your role's purpose\n- Modify `defaults/main.yml` - add your role variables\n\n### 3. Develop Your Role\n- Add tasks to `tasks/main.yml`\n- Create OS-specific task files if needed\n- Define handlers in `handlers/main.yml`\n- Document all variables\n\n### 4. Test Thoroughly\n```bash\n# Run pre-commit checks\npre-commit run --all-files\n\n# Test with Molecule\nmolecule test\n\n# Test with Docker\nansible-playbook -i tests/inventory/docker-containers.yml \\\n  tests/playbooks/docker-containers.yml\n```\n\n### 5. Publish (Optional)\n```bash\n# Publish to Ansible Galaxy\nansible-galaxy role import <github-user> <repo-name>\n```\n\n## Resources:\n\n- [Ansible Role Documentation](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html)\n- [Ansible Best Practices](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)\n- [Molecule Documentation](https://molecule.readthedocs.io/)\n- [Ansible Galaxy](https://galaxy.ansible.com/)\n\n## Get Help:\n\n- Open an issue on GitHub\n- Check existing issues and discussions\n- Review the CONTRIBUTING.md guide\n\nHappy role development! 🚀"
+      "title": "CI Scenario Matrix",
+      "description": "`.github/workflows/molecule.yml` defines which scenarios run in GitHub Actions.\n\nWhen adding/removing scenarios locally, update this matrix in the same change.",
+      "file": ".github/workflows/molecule.yml",
+      "line": 1
+    },
+    {
+      "title": "Instruction Sources",
+      "description": "Repository coding rules live in `.github/instructions/` and `AGENTS.md`.\n\nBefore making broad edits, check these files for formatting, linting, and workflow conventions.",
+      "directory": ".github/instructions"
+    },
+    {
+      "title": "Runbook",
+      "description": "## Useful local commands\n\n```bash\npre-commit run -a\nansible-lint\nmolecule test\nansible-playbook -i tests/inventory/docker-containers.yml tests/playbooks/docker-containers.yml\n```\n\nTip: use targeted scenario runs during development, then finish with full validation."
     }
   ]
 }
