@@ -22,7 +22,7 @@ import math
 import traceback
 from pathlib import Path
 import json
-import platform
+import platform 
 
 sys.argv[0] = os.path.abspath(sys.argv[0])
 
@@ -618,7 +618,7 @@ def inject_live_restore(config, daemon_json_path):
     config['live-restore'] = True
 
     return config
-
+    
 @config_update
 def inject_registry_mirrors(config, daemon_json_path):
     """ On April 1, 2025, dockerhub is changing their rate limit on pulls. [1]
@@ -1140,7 +1140,7 @@ try:
         if not args.no_libvirt:
             log("=> Checking if VM capable...")
             process_call("wget https://s3.amazonaws.com/vast.ai/send_mach_info.py -O " + os.path.join(sys.path[0], "send_mach_info.py") + ";", shell=True, stdout=apt_stdout, stderr=apt_stdout)
-            try:
+            try: 
                 import send_mach_info
                 from send_mach_info import check_if_iommu_ok, gpus_by_iommu_by_index, devices_by_iommu_by_index
                 if check_if_iommu_ok(gpus_by_iommu_by_index(), devices_by_iommu_by_index()):
@@ -1170,7 +1170,7 @@ try:
                     sys.exit(1)
                 else:
                     print("NVML test ok")
-
+                
                 num_gpus = get_gpu_count()
                 print(f"found {num_gpus} nv gpus")
 
@@ -1179,7 +1179,7 @@ try:
 
                     upgrade_pytorch = ""
                     pytorch_tag="latest"
-                    try:
+                    try:                    
                         cuda_version = subprocess.check_output(
                                     "nvidia-smi | grep 'CUDA Version' | sed -E 's/.*CUDA Version: ([0-9.]+).*/\\1/'",
                                     shell=True,

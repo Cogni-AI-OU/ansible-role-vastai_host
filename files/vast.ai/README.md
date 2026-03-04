@@ -336,6 +336,20 @@ These scripts are automatically deployed by the Ansible role to
 `/var/lib/vastai_kaalia/` on target hosts. The role ensures proper permissions
 and execution capabilities are set.
 
+## Re-sync all scripts
+
+To re-download and replace all files listed in this document, run:
+
+```bash
+./scripts/sync_all_scripts.sh
+```
+
+Use dry-run mode to preview without changing files:
+
+```bash
+./scripts/sync_all_scripts.sh --dry-run
+```
+
 ## Source URLs
 
 - Primary: <https://s3.amazonaws.com/vast.ai/>

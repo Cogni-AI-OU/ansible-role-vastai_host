@@ -16,7 +16,7 @@ from pathlib import Path
 import re
 
 def iommu_groups():
-    return Path('/sys/kernel/iommu_groups').glob('*')
+    return Path('/sys/kernel/iommu_groups').glob('*') 
 def iommu_groups_by_index():
     return ((int(path.name) , path) for path in iommu_groups())
 
@@ -32,8 +32,8 @@ class PCI:
         PCI.bus = int(parts[0], 16)
         PCI.device = int(parts[1], 16)
         PCI.fn = int(parts[2], 16)
-
-# returns an iterator of devices, each of which contains the list of device functions.
+        
+# returns an iterator of devices, each of which contains the list of device functions.  
 def iommu_devices(iommu_path : Path):
     paths = (iommu_path / "devices").glob("*")
     devices= {}
@@ -46,7 +46,7 @@ def iommu_devices(iommu_path : Path):
             devices[device] = [(pci,path)]
     return devices
 
-# given a list of device function IDs belonging to a device and their paths,
+# given a list of device function IDs belonging to a device and their paths, 
 # gets the render_node if it has one, using a list as an optional
 def render_no_if_gpu(device_fns):
     for (_, path) in device_fns:
@@ -54,7 +54,7 @@ def render_no_if_gpu(device_fns):
             return [r.name for r in (path/'drm').glob("render*")]
     return []
 
-# returns a dict of bus:device -> (all pci ids, renderNode) for all gpus in an iommu group, by iommu group
+# returns a dict of bus:device -> (all pci ids, renderNode) for all gpus in an iommu group, by iommu group 
 def gpus_by_iommu_by_index():
     iommus = iommu_groups_by_index()
     for index,path in iommus:
@@ -218,7 +218,7 @@ def epsilon_greedyish_speedtest():
         print(f"running speedtest on random server id {mirror}")
         output = subprocess.check_output(f"docker run --rm -v /var/lib/vastai_kaalia/.config:/root/.config vastai/test:speedtest -s {mirror} --accept-license --accept-gdpr --format=json", shell=True).decode('utf-8')
         joutput = json.loads(output)
-        score = joutput["download"]["bandwidth"] + joutput["upload"]["bandwidth"]
+        score = joutput["download"]["bandwidth"] + joutput["upload"]["bandwidth"] 
         if int(score) > int(greedy):
             with open("/var/lib/vastai_kaalia/data/speedtest_mirrors", "w") as f:
                 f.write(f"{mirror},{score}")
@@ -227,7 +227,7 @@ def epsilon_greedyish_speedtest():
         print(f"running speedtest on known best server id {id}")
         output = subprocess.check_output(f"docker run --rm -v /var/lib/vastai_kaalia/.config:/root/.config vastai/test:speedtest -s {id} --accept-license --accept-gdpr --format=json", shell=True).decode('utf-8')
         joutput = json.loads(output)
-        score = joutput["download"]["bandwidth"] + joutput["upload"]["bandwidth"]
+        score = joutput["download"]["bandwidth"] + joutput["upload"]["bandwidth"] 
         with open("/var/lib/vastai_kaalia/data/speedtest_mirrors", "w") as f: # we always want to update best in case it gets worse
             f.write(f"{id},{score}")
         return output
@@ -240,9 +240,9 @@ def epsilon_greedyish_speedtest():
             return epsilon(score)
     except:
         return epsilon(0)
-
+                
 def is_vms_enabled():
-    try:
+    try: 
         with open('/var/lib/vastai_kaalia/kaalia.cfg') as conf:
             for field in conf.readlines():
                 entries = field.split('=')
@@ -264,7 +264,7 @@ def get_container_start_times():
         inspect_result = subprocess.run(["docker", "inspect", container_id], capture_output=True, text=True)
 
         container_info = json.loads(inspect_result.stdout)
-
+        
         container_name = container_info[0]["Name"].strip("/")
         start_time = container_info[0]["State"]["StartedAt"]
 
@@ -284,7 +284,7 @@ def dict_to_fio_ini(job_dict):
 def measure_read_bandwidth(disk_path, path, size_gb=1, block_size="4M"):
     try:
         with open(disk_path, "wb") as f:
-            written = 0
+            written = 0 
             total_bytes = size_gb * 1024**3
             chunk_size = 1024**2
             while written < total_bytes:
@@ -332,7 +332,7 @@ def mount_fuse(size, disk_mountpoint, fs_mountpoint, timeout=10):
     os.makedirs(fs_mountpoint, exist_ok=True)
     mounted = False
     if is_mounted(fs_mountpoint):
-        mounted = True
+        mounted = True 
         try:
             subprocess.run(["sudo", "fusermount", "-u", fs_mountpoint], check=True)
             print(f"Unmounted {fs_mountpoint}")
@@ -354,7 +354,7 @@ def mount_fuse(size, disk_mountpoint, fs_mountpoint, timeout=10):
     fuse_location = "/var/lib/vastai_kaalia/vast_fuse"
     cmd_args = [
         "sudo",
-        fuse_location,
+        fuse_location, 
         "-m",
         disk_mountpoint,
         "-q",
@@ -392,14 +392,14 @@ def is_mounted(path):
         return False
 
 def get_channel():
-    try:
+    try: 
         with open('/var/lib/vastai_kaalia/.channel') as f:
             channel = f.read()
             return channel
     except:
         pass
     return "" # default channel is just "" on purpose.
-
+        
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--speedtest", action='store_true')
@@ -460,7 +460,7 @@ if __name__ == '__main__':
 
     print("checking speedtest")
     try:
-        r = random.randint(0, 8)
+        r = random.randint(0, 8) 
         if r == 3 or args.speedtest:
             print("speedtest")
             try:
@@ -501,13 +501,13 @@ if __name__ == '__main__':
 
     try:
         r = random.randint(0, 48)
-        if r == 31:
+        if r == 31:    
             print('cleaning build cache')
             output  = subprocess.check_output("docker builder prune --force",  shell=True).decode('utf-8')
             print(output)
     except:
         pass
-
+    
 
     fio_command_read  = "sudo fio --numjobs=16 --ioengine=libaio --direct=1 --verify=0 --name=read_test  --directory=/var/lib/docker --bs=32k --iodepth=64 --size=128MB --readwrite=randread  --time_based --runtime=1.0s --group_reporting=1 --iodepth_batch_submit=64 --iodepth_batch_complete_max=64"
     fio_command_write = "sudo fio --numjobs=16 --ioengine=libaio --direct=1 --verify=0 --name=write_test --directory=/var/lib/docker --bs=32k --iodepth=64 --size=128MB --readwrite=randwrite --time_based --runtime=0.5s --group_reporting=1 --iodepth_batch_submit=64 --iodepth_batch_complete_max=64"
@@ -563,15 +563,15 @@ if __name__ == '__main__':
             data["bw_cpu_dev"] = disk_write_bw
 
 
-    r = random.randint(0, 10)
+    r = random.randint(0, 10) 
     if mach_api_key and (r == 3 or args.nw_disk):
         print("nw_disk")
-        headers = {"Authorization" : f"Bearer {mach_api_key}"}
+        headers = {"Authorization" : f"Bearer {mach_api_key}"} 
         response = requests.get(args.server+'/api/v0/network_disks/', headers=headers)
         if response.status_code == 200:
-            # for each disk, check if a certain amount is in use, if so, dont mount
+            # for each disk, check if a certain amount is in use, if so, dont mount 
             # otherwise mount half of remaining space and run speed test
-            disk_speeds = []
+            disk_speeds = [] 
             r_json = response.json()
             for mount in r_json["mounts"] :
                 space_in_use = int(subprocess.check_output(['du','-s', mount.get("mount_point")]).split()[0].decode('utf-8'))
@@ -590,7 +590,7 @@ if __name__ == '__main__':
                             subprocess.run(["sudo", "fusermount", "-u", fs_mountpoint], check=True)
                             disk_speeds.append({"network_disk_id": mount.get("network_disk_id"), "bandwidth": int(bw)})
                             proc.terminate()
-
+                        
             if disk_speeds:
                 response = requests.put(args.server+'/api/v0/network_disks/', headers=headers, json={"disk_speeds": disk_speeds})
 
@@ -640,7 +640,7 @@ if __name__ == '__main__':
         pass
     try:
         vm_status = is_vms_enabled()
-        data["vms_enabled"] = vm_status and data["iommu_virtualizable"]
+        data["vms_enabled"] = vm_status and data["iommu_virtualizable"] 
         if vm_status:
             if not data["iommu_virtualizable"]:
                 data["vm_error_msg"] = "IOMMU config or Nvidia DRM Modeset has changed to no longer support VMs"
@@ -651,7 +651,7 @@ if __name__ == '__main__':
         print(f"Got VM feature enablement status: {vm_status}")
     except:
         pass
-
+    
     try:
         containerNames_to_startTimes = get_container_start_times()
         data["container_startTimes"] = containerNames_to_startTimes
