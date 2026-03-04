@@ -354,7 +354,7 @@ Use dry-run mode to preview without changing files:
 
 ## Source URLs
 
-- Primary: <https://s3.amazonaws.com/vast.ai/>
-- Public: <https://s3.amazonaws.com/public.vast.ai/>
-- Kaalia scripts: <https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/>
+- Primary scripts example: <https://s3.amazonaws.com/vast.ai/send_mach_info.py>
+- Public scripts example: <https://s3.amazonaws.com/public.vast.ai/install>
+- Kaalia scripts example: <https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/update_scripts.sh>
 - CLI Tool: <https://raw.githubusercontent.com/vast-ai/vast-cli/master/vast.py>
