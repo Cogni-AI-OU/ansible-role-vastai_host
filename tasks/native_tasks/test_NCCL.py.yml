@@ -1,5 +1,0 @@
----
-- name: Verify Python availability for NCCL tests (native-tasks)
-  ansible.builtin.command:
-    cmd: python3 --version
-  changed_when: false

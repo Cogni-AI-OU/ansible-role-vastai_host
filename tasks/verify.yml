@@ -33,14 +33,6 @@
     - ansible_os_family == 'Debian'
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
-- name: Check native-tasks completion marker
-  ansible.builtin.stat:
-    path: /var/lib/vastai_kaalia/native_tasks_install_done
-  register: vastai_host_native_tasks_marker_stat
-  when:
-    - ansible_os_family == 'Debian'
-    - vastai_host_install_execute
-    - vastai_host_install_mode == 'native-tasks'
 - name: Assert scripted install artifacts
   ansible.builtin.assert:
     that:
@@ -60,13 +52,3 @@
     - not ansible_check_mode
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
-- name: Assert native-tasks completion marker
-  ansible.builtin.assert:
-    that:
-      - vastai_host_native_tasks_marker_stat.stat.exists
-    fail_msg: Native-tasks mode did not create its completion marker file.
-  when:
-    - ansible_os_family == 'Debian'
-    - not ansible_check_mode
-    - vastai_host_install_execute
-    - vastai_host_install_mode == 'native-tasks'

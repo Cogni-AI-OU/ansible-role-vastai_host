@@ -1,7 +1,0 @@
----
-- name: Ensure self test log file exists (native-tasks)
-  ansible.builtin.copy:
-    content: ''
-    dest: /var/lib/vastai_kaalia/self_test.log
-    mode: '0644'
-    force: false

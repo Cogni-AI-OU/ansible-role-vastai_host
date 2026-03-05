@@ -1,6 +1,0 @@
----
-- name: Ensure libvirt binaries are present (native-tasks)
-  ansible.builtin.package:
-    name: libvirt-clients
-    state: present
-  failed_when: false

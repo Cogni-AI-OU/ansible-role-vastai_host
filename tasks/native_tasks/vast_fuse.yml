@@ -1,5 +1,0 @@
----
-- name: Ensure FUSE package is installed (native-tasks)
-  ansible.builtin.package:
-    name: fuse
-    state: present
