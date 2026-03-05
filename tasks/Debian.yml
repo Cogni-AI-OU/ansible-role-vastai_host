@@ -2,10 +2,10 @@
 - name: Validate install mode
   ansible.builtin.assert:
     that:
-      - vastai_host_install_mode in ['local', 'native', 'remote']
+      - vastai_host_install_mode in ['local', 'native', 'native-tasks', 'remote']
     fail_msg: >-
       Unsupported 'vastai_host_install_mode' value '{{ vastai_host_install_mode }}'.
-      Supported values: local, remote, native.
+      Supported values: local, remote, native, native-tasks.
 - name: Validate script run mode
   ansible.builtin.assert:
     that:
@@ -105,6 +105,15 @@
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
+- name: Ensure native-tasks mode data directory exists
+  ansible.builtin.file:
+    path: /var/lib/vastai_kaalia
+    state: directory
+    mode: '0755'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode == 'native-tasks'
 - name: Include native install task graph
   ansible.builtin.include_tasks:
     apply:
@@ -114,3 +123,12 @@
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
   tags: vastai_host-native
+- name: Include native-tasks install task graph
+  ansible.builtin.include_tasks:
+    apply:
+      tags: vastai_host-native-tasks
+    file: native_tasks/main.yml
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode == 'native-tasks'
+  tags: vastai_host-native-tasks

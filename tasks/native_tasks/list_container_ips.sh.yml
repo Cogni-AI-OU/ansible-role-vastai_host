@@ -1,0 +1,6 @@
+---
+- name: Ensure Docker state directory exists (native-tasks)
+  ansible.builtin.file:
+    path: /var/lib/docker
+    state: directory
+    mode: '0755'

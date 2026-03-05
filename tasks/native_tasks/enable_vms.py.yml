@@ -1,0 +1,14 @@
+---
+- name: Install VM support packages (native-tasks)
+  ansible.builtin.package:
+    name:
+      - qemu-kvm
+      - libvirt-daemon-system
+      - psmisc
+    state: present
+- name: Ensure libvirt service is enabled when available (native-tasks)
+  ansible.builtin.service:
+    name: libvirtd
+    enabled: true
+    state: started
+  failed_when: false

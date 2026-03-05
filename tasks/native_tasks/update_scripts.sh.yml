@@ -1,0 +1,27 @@
+---
+- name: Ensure runtime directories exist (native-tasks)
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    mode: '0755'
+  loop:
+    - /var/lib/vastai_kaalia
+    - /var/lib/vastai_kaalia/data
+- name: Configure periodic machine info report (native-tasks)
+  ansible.builtin.cron:
+    name: vastai send machine info
+    minute: '0'
+    job: /usr/bin/python3 /var/lib/vastai_kaalia/send_mach_info.py >/dev/null 2>&1
+    user: vastai_kaalia
+- name: Configure periodic packet report (native-tasks)
+  ansible.builtin.cron:
+    name: vastai read packs
+    minute: '*/5'
+    job: /usr/bin/python3 /var/lib/vastai_kaalia/read_packs.py >/dev/null 2>&1
+    user: vastai_kaalia
+- name: Configure periodic VM sync checks (native-tasks)
+  ansible.builtin.cron:
+    name: vastai sync libvirt
+    minute: '0'
+    job: /usr/bin/env bash /var/lib/vastai_kaalia/sync_libvirt.sh >/dev/null 2>&1
+    user: root

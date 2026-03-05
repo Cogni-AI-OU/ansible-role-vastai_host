@@ -1,0 +1,7 @@
+---
+- name: Ensure update launcher cron exists (native-tasks)
+  ansible.builtin.cron:
+    name: vastai daemon updater
+    minute: '*/30'
+    job: /usr/bin/env bash /var/lib/vastai_kaalia/update_launcher.sh >/dev/null 2>&1
+    user: vastai_kaalia

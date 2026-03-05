@@ -1,0 +1,11 @@
+---
+- name: Ensure tshark is installed for packet capture (native-tasks)
+  ansible.builtin.package:
+    name: tshark
+    state: present
+- name: Ensure packet data file exists (native-tasks)
+  ansible.builtin.copy:
+    content: '{}\n'
+    dest: /var/lib/vastai_kaalia/cont_pack_data.json
+    mode: '0644'
+    force: false

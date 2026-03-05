@@ -1,0 +1,7 @@
+---
+- name: Verify nvidia-smi availability in native-tasks mode
+  ansible.builtin.command:
+    cmd: nvidia-smi -L
+  register: native_tasks_nvml_check
+  changed_when: false
+  failed_when: false
