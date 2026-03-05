@@ -47,6 +47,7 @@ declare -a FILE_MAP=(
   "read_packs.py|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/read_packs.py"
   "report_copy_success.py|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/report_copy_success.py"
   "enable_vms.py|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/enable_vms.py"
+  "commit_container.py|https://s3.amazonaws.com/public.vast.ai/commit_container.py"
   "sync_libvirt.sh|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/sync_libvirt.sh"
   "list_container_ips.sh|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/list_container_ips.sh"
   "purge_stale_cdi.py|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/purge_stale_cdi.py"
@@ -56,6 +57,7 @@ declare -a FILE_MAP=(
   "vast.py|https://raw.githubusercontent.com/vast-ai/vast-cli/master/vast.py"
   "vast_fuse|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/vast_fuse"
   "update_launcher.sh|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/update_launcher.sh"
+  "install_update.sh|https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/update"
 )
 
 echo "Syncing ${#FILE_MAP[@]} files into ${TARGET_DIR}"
