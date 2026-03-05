@@ -10,30 +10,53 @@
         executable: '{{ controller_pip }}'
       delegate_to: localhost
       run_once: true  # noqa: run-once[task]
-    - name: Ensure container is started
-      community.docker.docker_container:
-        command: sleep infinity
-        image: '{{ container_image }}'
-        name: '{{ inventory_hostname }}'
-        pull: true
-        recreate: true
-        state: started
+    - name: Pull container image
+      ansible.builtin.command:
+        argv:
+          - docker
+          - pull
+          - '{{ container_image }}'
+      changed_when: true
       delegate_to: localhost
-      vars:
-        # Use system Python with requests installed for controller-side Docker modules.
-        ansible_python_interpreter: '{{ controller_python }}'
+    - name: Remove existing container if present
+      ansible.builtin.command:
+        argv:
+          - docker
+          - rm
+          - --force
+          - '{{ inventory_hostname }}'
+      changed_when: remove_container_result.rc == 0
+      delegate_to: localhost
+      failed_when: false
+      register: remove_container_result
+    - name: Start test container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --detach
+          - --name
+          - '{{ inventory_hostname }}'
+          - '{{ container_image }}'
+          - sleep
+          - infinity
+      changed_when: true
+      delegate_to: localhost
     - name: Wait for container to be ready
-      community.docker.docker_container_info:
-        name: '{{ inventory_hostname }}'
+      ansible.builtin.command:
+        argv:
+          - docker
+          - inspect
+          - --format
+          - '{{ "{{.State.Running}}" }}'
+          - '{{ inventory_hostname }}'
       register: container_info
       until:
         - container_info is defined
-        - (container_info.container is defined and container_info.container.State.Running | default(false) | bool)
+        - container_info.stdout is defined
+        - container_info.stdout | trim == 'true'
       delegate_to: localhost
       changed_when: false
-      vars:
-        # Use system Python with requests installed for controller-side Docker modules.
-        ansible_python_interpreter: '{{ controller_python }}'
     - name: Check if Python 3 exists on Ubuntu/Debian
       ansible.builtin.raw: test -e "{{ ansible_python_interpreter }}"
       register: python_exists_debian
@@ -66,8 +89,12 @@
   tags: verify
   post_tasks:
     - name: Stop Docker containers
-      community.docker.docker_container:
-        name: '{{ inventory_hostname }}'
-        state: stopped
+      ansible.builtin.command:
+        argv:
+          - docker
+          - stop
+          - '{{ inventory_hostname }}'
+      changed_when: stop_container_result.rc == 0
       delegate_to: localhost
       failed_when: false
+      register: stop_container_result
