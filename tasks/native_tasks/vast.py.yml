@@ -7,3 +7,4 @@
   ansible.builtin.pip:
     name: vastai
     executable: pip3
+    extra_args: --break-system-packages
