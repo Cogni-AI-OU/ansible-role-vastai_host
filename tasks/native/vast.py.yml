@@ -1,0 +1,11 @@
+---
+- name: Deploy vast.py
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: vast.py
+    native_script_dest: /var/lib/vastai_kaalia/vast.py
+- name: Create vast CLI wrapper
+  ansible.builtin.copy:
+    content: "#!/bin/sh\nexec python3 /var/lib/vastai_kaalia/vast.py \"$@\"\n"
+    dest: /var/lib/vastai_kaalia/vast
+    mode: '0755'

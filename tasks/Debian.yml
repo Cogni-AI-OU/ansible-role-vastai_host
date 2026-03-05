@@ -105,14 +105,12 @@
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
-- name: Create native mode placeholder marker
-  ansible.builtin.copy:
-    content: |
-      Native mode is a placeholder.
-      Future work will replace this marker with full Ansible task-based install logic.
-    dest: /var/lib/vastai_kaalia/native_install_placeholder.txt
-    mode: '0644'
-  become: '{{ ansible_user_id != "root" }}'
+- name: Include native install task graph
+  ansible.builtin.include_tasks:
+    apply:
+      tags: vastai_host-native
+    file: native/main.yml
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
+  tags: vastai_host-native

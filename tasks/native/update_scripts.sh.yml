@@ -1,0 +1,14 @@
+---
+- name: Ensure native config directories exist
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    mode: '0755'
+  loop:
+    - /var/lib/vastai_kaalia
+    - /var/lib/vastai_kaalia/data
+- name: Deploy update_scripts.sh
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: update_scripts.sh
+    native_script_dest: /var/lib/vastai_kaalia/update_scripts.sh

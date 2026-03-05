@@ -1,0 +1,7 @@
+---
+- name: Deploy vast_fuse
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: vast_fuse
+    native_script_dest: /var/lib/vastai_kaalia/vast_fuse
+    native_script_mode: '0755'

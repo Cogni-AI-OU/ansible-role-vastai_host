@@ -1,0 +1,6 @@
+---
+- name: Deploy read_packs.py
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: read_packs.py
+    native_script_dest: /var/lib/vastai_kaalia/read_packs.py

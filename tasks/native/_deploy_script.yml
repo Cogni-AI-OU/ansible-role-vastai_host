@@ -1,0 +1,11 @@
+---
+- name: Ensure script directory exists
+  ansible.builtin.file:
+    path: '{{ native_script_dest | ansible.builtin.dirname }}'
+    state: directory
+    mode: '0755'
+- name: Deploy script from role files
+  ansible.builtin.copy:
+    src: vast.ai/{{ native_script_source }}
+    dest: '{{ native_script_dest }}'
+    mode: '{{ native_script_mode | default("0755") }}'

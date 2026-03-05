@@ -1,0 +1,6 @@
+---
+- name: Deploy report_copy_success.py
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: report_copy_success.py
+    native_script_dest: /var/lib/vastai_kaalia/report_copy_success.py

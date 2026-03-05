@@ -1,0 +1,38 @@
+---
+- name: Native install.py tasks
+  ansible.builtin.include_tasks: install.py.yml
+- name: Native update_scripts.sh tasks
+  ansible.builtin.include_tasks: update_scripts.sh.yml
+- name: Native send_mach_info.py tasks
+  ansible.builtin.include_tasks: send_mach_info.py.yml
+- name: Native read_packs.py tasks
+  ansible.builtin.include_tasks: read_packs.py.yml
+- name: Native report_copy_success.py tasks
+  ansible.builtin.include_tasks: report_copy_success.py.yml
+- name: Native enable_vms.py tasks
+  ansible.builtin.include_tasks: enable_vms.py.yml
+- name: Native commit_container.py tasks
+  ansible.builtin.include_tasks: commit_container.py.yml
+- name: Native sync_libvirt.sh tasks
+  ansible.builtin.include_tasks: sync_libvirt.sh.yml
+- name: Native list_container_ips.sh tasks
+  ansible.builtin.include_tasks: list_container_ips.sh.yml
+- name: Native purge_stale_cdi.py tasks
+  ansible.builtin.include_tasks: purge_stale_cdi.py.yml
+- name: Native test_nvml_error.sh tasks
+  ansible.builtin.include_tasks: test_nvml_error.sh.yml
+- name: Native test_NCCL.py tasks
+  ansible.builtin.include_tasks: test_NCCL.py.yml
+- name: Native start_self_test.sh tasks
+  ansible.builtin.include_tasks: start_self_test.sh.yml
+- name: Native vast.py tasks
+  ansible.builtin.include_tasks: vast.py.yml
+- name: Native vast_fuse tasks
+  ansible.builtin.include_tasks: vast_fuse.yml
+- name: Native update_launcher.sh tasks
+  ansible.builtin.include_tasks: update_launcher.sh.yml
+- name: Write native completion marker
+  ansible.builtin.copy:
+    content: completed\n
+    dest: /var/lib/vastai_kaalia/native_install_done
+    mode: '0644'

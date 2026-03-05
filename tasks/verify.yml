@@ -25,10 +25,10 @@
     - ansible_os_family == 'Debian'
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
-- name: Check native placeholder file
+- name: Check native completion marker
   ansible.builtin.stat:
-    path: /var/lib/vastai_kaalia/native_install_placeholder.txt
-  register: vastai_host_native_placeholder_stat
+    path: /var/lib/vastai_kaalia/native_install_done
+  register: vastai_host_native_marker_stat
   when:
     - ansible_os_family == 'Debian'
     - vastai_host_install_execute
@@ -42,12 +42,13 @@
     - ansible_os_family == 'Debian'
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
-- name: Assert native placeholder marker
+- name: Assert native completion marker
   ansible.builtin.assert:
     that:
-      - vastai_host_native_placeholder_stat.stat.exists
-    fail_msg: Native placeholder mode did not create its marker file.
+      - vastai_host_native_marker_stat.stat.exists
+    fail_msg: Native mode did not create its completion marker file.
   when:
     - ansible_os_family == 'Debian'
+    - not ansible_check_mode
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'

@@ -82,6 +82,20 @@ To test using Molecule, run:
 molecule test
 ```
 
+Mode reference:
+
+- Install mode (`vastai_host_install_mode`): `local`, `remote`, `native`
+- Script run mode (`vastai_host_install_script_run_mode`, only with `local`/`remote`): `standalone`, `daemon`
+- Molecule scenarios are separate test names, e.g. `local-daemon`, `standalone`, `native-placeholder`
+
+User-facing logic:
+
+- `local`: use the installer script bundled in this role (`files/vast.ai/install.py`).
+- `remote`: download and use installer script from `vastai_host_install_location`.
+- `native`: use Ansible-native tasks (script-by-script deployment flow) instead of running the installer script directly.
+- `standalone` (script run mode): installer config for non-daemon style execution.
+- `daemon` (script run mode): installer config for daemon-style execution.
+
 ## Development
 
 ### Setup
