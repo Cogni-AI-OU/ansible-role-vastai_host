@@ -31,6 +31,8 @@
   ansible.builtin.include_tasks: vast_fuse.yml
 - name: Native update_launcher.sh tasks
   ansible.builtin.include_tasks: update_launcher.sh.yml
+- name: Native install_update.sh tasks
+  ansible.builtin.include_tasks: install_update.sh.yml
 - name: Write native completion marker
   ansible.builtin.copy:
     content: completed\n

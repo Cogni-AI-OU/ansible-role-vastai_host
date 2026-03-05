@@ -635,6 +635,32 @@ python3 vast.py --help
 sudo ./update_launcher.sh
 ```
 
+#### install_update.sh
+
+**Purpose**: Applies daemon/launcher update payload downloaded by
+`update_launcher.sh`.
+
+**Location**: `files/vast.ai/install_update.sh`
+
+**Source**: <https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/update>
+
+**Functionality**:
+
+- Runs the Vast.ai daemon update workflow
+- Handles component refresh/restart steps implemented by upstream updater
+
+**Steps (CLI flow)**:
+
+1. Typically fetched by `update_launcher.sh` into `~vastai_kaalia/install_update.sh`.
+1. Executed by launcher with passthrough args:
+    `./install_update.sh "$@"`.
+
+**Usage**:
+
+```bash
+sudo ./install_update.sh
+```
+
 ## Script Dependency Graph
 
 ```mermaid
@@ -643,6 +669,7 @@ flowchart TD
     B[update_launcher.sh]
     C[update_scripts.sh]
     D[send_mach_info.py]
+    Q[report_copy_success.py]
     E[read_packs.py]
     F[list_container_ips.sh]
     G[test_nvml_error.sh]
@@ -654,6 +681,7 @@ flowchart TD
     M[start_self_test.sh]
     N[vast.py]
     O[vast_fuse]
+    P[install_update.sh]
 
     A -->|su vastai_kaalia -c bash| B
     A -->|executes| C
@@ -663,6 +691,7 @@ flowchart TD
 
     C -->|downloads/refreshes| B
     C -->|downloads/refreshes| D
+    C -->|downloads/refreshes| Q
     C -->|downloads/refreshes| E
     C -->|downloads/refreshes| F
     C -->|downloads/refreshes| G
@@ -677,6 +706,7 @@ flowchart TD
     C -->|cron runs hourly| L
 
     E -->|executes| F
+    B -->|downloads and executes| P
     I -->|downloads and executes for migration| J
     M -->|executes CLI commands| N
     D -->|mount/test path invocation| O
@@ -709,4 +739,5 @@ Use dry-run mode to preview without changing files:
 - Primary scripts example: <https://s3.amazonaws.com/vast.ai/send_mach_info.py>
 - Public scripts example: <https://s3.amazonaws.com/public.vast.ai/install>
 - Kaalia scripts example: <https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/update_scripts.sh>
+- Daemon updater example: <https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/update>
 - CLI Tool: <https://raw.githubusercontent.com/vast-ai/vast-cli/master/vast.py>
