@@ -73,7 +73,7 @@ if [ "x$VAST_SERVER" = "x" ]; then
     VAST_SERVER="https://elb-internal-nocache.vast.ai"
 fi
 
-current_version="298"
+current_version="299"
 dir="$HOME/version_$current_version"
 LAUNCHER="$HOME/latest/launch_kaalia.sh"
 METRICS_PUSHER_LAUNCHER="$HOME/latest/launch_metrics_pusher.sh"
@@ -84,7 +84,7 @@ DAEMON="$HOME/daemon.tar.gz"
 LOG="$HOME/update_${current_version}.log"
 DATADIR="$HOME/data"
 VENV="$HOME/venv"
-EXPECTED_HASH="2a1f941d6d6019bfd075b96f4afff591f16228efb3428facc77ea552b9a1b702"
+EXPECTED_HASH="bb35fb9189f62abac98c37102e04365a016edbd535ff809ed6129b16a906fa87"
 UPDATE_CRON=/etc/cron.d/vastai_kaalia_update
 RESTART_CRON=/etc/cron.d/vastai_restart_everything
 SYSTEMD_SERVICE="/etc/systemd/system/vastai.service"
@@ -234,7 +234,7 @@ if [ "$DO_INSTALL" = "y" ]; then
 VAST_SERVER="$VAST_SERVER"
 END
     echo "$VAST_SERVER" > "$HOME/vast_server"
-    echo "b'd151ab1a43f559a9ed2c938eb779d7b1e1a8e7c5\n'" > "$GIT_CURRENT_VERSION"
+    echo "b'85d5d1185d44b103f8f3792343f92f94344d8f6e\n'" > "$GIT_CURRENT_VERSION"
 
     bash "$dir"/onupdate.sh
 
