@@ -46,16 +46,6 @@
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'local'
-- name: Download install script from remote URL
-  ansible.builtin.get_url:
-    url: '{{ vastai_host_install_location }}'
-    dest: '{{ vastai_host_install_script_destination }}'
-    mode: '0755'
-    validate_certs: '{{ vastai_host_install_validate_certs }}'
-  become: '{{ ansible_user_id != "root" }}'
-  when:
-    - vastai_host_install_execute
-    - vastai_host_install_mode == 'remote'
 - name: Ensure scripted mode data directory exists
   ansible.builtin.file:
     path: /var/lib/vastai_kaalia
@@ -66,6 +56,16 @@
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
+- name: Download install script from remote URL
+  ansible.builtin.get_url:
+    url: '{{ vastai_host_install_location }}'
+    dest: '{{ vastai_host_install_script_destination }}'
+    mode: '0755'
+    validate_certs: '{{ vastai_host_install_validate_certs }}'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode == 'remote'
 - name: Run install script
   ansible.builtin.command:
     argv: '{{ vastai_host_install_command_argv }}'

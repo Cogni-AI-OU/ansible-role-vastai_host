@@ -7,7 +7,7 @@ vastai_host_install_extra_args:
 vastai_host_install_location: files/vast.ai/install.py
 vastai_host_install_mode: local
 vastai_host_install_python: python3
-vastai_host_install_script_destination: /usr/local/src/vastai-install.py
+vastai_host_install_script_destination: /var/lib/vastai_kaalia/install.py
 vastai_host_install_script_run_mode: standalone
 vastai_host_install_script_run_mode_args:
   daemon:

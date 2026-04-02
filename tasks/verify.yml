@@ -40,6 +40,7 @@
     fail_msg: Scripted Vast.ai install did not deploy the installer script.
   when:
     - ansible_os_family == 'Debian'
+    - not ansible_check_mode
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
 - name: Assert native completion marker
