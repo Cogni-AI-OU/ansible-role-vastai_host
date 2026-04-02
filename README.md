@@ -90,7 +90,7 @@ Mode reference:
 
 User-facing logic:
 
-- `local`: use the installer script bundled in this role (`files/vast.ai/install.py`).
+- `local`: use the installer script bundled in this role (`files/vast.ai/vast_host_installer.py`).
 - `remote`: download and use installer script from `vastai_host_install_location`.
 - `native`: use Ansible-native tasks (script-by-script deployment flow) instead of running the installer script directly.
 - `standalone` (script run mode): installer config for non-daemon style execution.

@@ -8,10 +8,10 @@ vastai_host_install_execute: true
 vastai_host_install_extra_args:
   - --no-driver
   - --no-libvirt
-vastai_host_install_location: files/vast.ai/install.py
+vastai_host_install_location: files/vast.ai/vast_host_installer.py
 vastai_host_install_mode: local
 vastai_host_install_python: python3
-vastai_host_install_script_destination: /var/lib/vastai_kaalia/install.py
+vastai_host_install_script_destination: /var/lib/vastai_kaalia/vast_host_installer.py
 vastai_host_install_script_run_mode: standalone
 vastai_host_install_script_run_mode_args:
   daemon:

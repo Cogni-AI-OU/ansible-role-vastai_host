@@ -42,6 +42,7 @@ download() {
 
 declare -a FILE_MAP=(
   "install.py|https://s3.amazonaws.com/public.vast.ai/install"
+  "vast_host_installer.py|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/vast_host_installer.py"
   "update_scripts.sh|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/update_scripts.sh"
   "send_mach_info.py|https://s3.amazonaws.com/vast.ai/send_mach_info.py"
   "read_packs.py|https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/read_packs.py"
