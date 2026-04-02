@@ -1,5 +1,9 @@
 ---
-vastai_host_account_identity: ''
+vastai_host_account_identity: >-
+  {{
+    lookup("ansible.builtin.env", "VASTAI_API_KEY")
+    | default("", true)
+  }}
 vastai_host_install_execute: true
 vastai_host_install_extra_args:
   - --no-driver
