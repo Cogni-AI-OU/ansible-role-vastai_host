@@ -66,6 +66,55 @@
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'remote'
+- name: Deploy host port range file
+  ansible.builtin.template:
+    src: host_port_range.j2
+    dest: /var/lib/vastai_kaalia/host_port_range
+    mode: '0644'
+    owner: '{{ vastai_host_config_template_user }}'
+    group: '{{ vastai_host_config_template_group }}'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+- name: Deploy host IP address file
+  ansible.builtin.template:
+    src: host_ipaddr.j2
+    dest: /var/lib/vastai_kaalia/host_ipaddr
+    mode: '0644'
+    owner: '{{ vastai_host_config_template_user }}'
+    group: '{{ vastai_host_config_template_group }}'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+    - (vastai_host_config_ipaddr | trim) | length > 0
+- name: Deploy vast server file
+  ansible.builtin.template:
+    src: vast_server.j2
+    dest: /var/lib/vastai_kaalia/vast_server
+    mode: '0644'
+    owner: '{{ vastai_host_config_template_user }}'
+    group: '{{ vastai_host_config_template_group }}'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+- name: Deploy environment file
+  ansible.builtin.template:
+    src: environment.j2
+    dest: /var/lib/vastai_kaalia/environment
+    mode: '0644'
+    owner: '{{ vastai_host_config_template_user }}'
+    group: '{{ vastai_host_config_template_group }}'
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
 - name: Run install script
   ansible.builtin.command:
     argv: '{{ vastai_host_install_command_argv }}'
