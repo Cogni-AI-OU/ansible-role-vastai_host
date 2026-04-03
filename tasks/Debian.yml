@@ -208,21 +208,38 @@
 - name: Ensure daemon runtime payload is managed for non-native mode before installer run
   ansible.builtin.shell: >-
     set -euo pipefail;
-    mkdir -p /var/lib/vastai_kaalia/latest;
+    latest_dir=/var/lib/vastai_kaalia/latest;
+    mkdir -p "$latest_dir";
     tmp_dir=$(mktemp -d);
     trap 'rm -rf "$tmp_dir"' EXIT;
     curl -fsSL '{{ vastai_host_daemon_archive_url }}' -o "$tmp_dir/daemon.tar.gz";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./kaalia > /var/lib/vastai_kaalia/latest/kaalia;
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./kaalia_docker_shim > /var/lib/vastai_kaalia/latest/kaalia_docker_shim;
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./ktxt_tojson.py > /var/lib/vastai_kaalia/latest/ktxt_tojson.py;
-    chmod 0755 /var/lib/vastai_kaalia/latest/kaalia;
-    chmod 0755 /var/lib/vastai_kaalia/latest/kaalia_docker_shim;
-    chmod 0755 /var/lib/vastai_kaalia/latest/ktxt_tojson.py;
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./kaalia > "$latest_dir/kaalia";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./kaalia_docker_shim > "$latest_dir/kaalia_docker_shim";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./ktxt_tojson.py > "$latest_dir/ktxt_tojson.py";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_kaalia.sh > "$latest_dir/launch_kaalia.sh";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_metrics_pusher.sh > "$latest_dir/launch_metrics_pusher.sh";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_tls.sh > "$latest_dir/launch_tls.sh";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_ssh.sh > "$latest_dir/launch_ssh.sh";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./apt-packages > "$latest_dir/apt-packages";
+    chmod 0755 "$latest_dir/kaalia";
+    chmod 0755 "$latest_dir/kaalia_docker_shim";
+    chmod 0755 "$latest_dir/ktxt_tojson.py";
+    chmod 0755 "$latest_dir/launch_kaalia.sh";
+    chmod 0755 "$latest_dir/launch_metrics_pusher.sh";
+    chmod 0755 "$latest_dir/launch_tls.sh";
+    chmod 0755 "$latest_dir/launch_ssh.sh";
+    chmod 0644 "$latest_dir/apt-packages";
     chown {{ vastai_host_config_template_user }}:{{ vastai_host_config_template_group }} \
       /var/lib/vastai_kaalia/latest/kaalia \
       /var/lib/vastai_kaalia/latest/kaalia_docker_shim \
-      /var/lib/vastai_kaalia/latest/ktxt_tojson.py
+      /var/lib/vastai_kaalia/latest/ktxt_tojson.py \
+      /var/lib/vastai_kaalia/latest/launch_kaalia.sh \
+      /var/lib/vastai_kaalia/latest/launch_metrics_pusher.sh \
+      /var/lib/vastai_kaalia/latest/launch_tls.sh \
+      /var/lib/vastai_kaalia/latest/launch_ssh.sh \
+      /var/lib/vastai_kaalia/latest/apt-packages
   args:
+    creates: /var/lib/vastai_kaalia/latest/launch_kaalia.sh
     executable: /bin/bash
   become: '{{ ansible_user_id != "root" }}'
   when:
@@ -231,6 +248,11 @@
     - vastai_host_account_identity_effective | length > 0
     - vastai_host_manage_non_native_daemon_payload
 - name: Run install script
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
   block:
     - name: Execute install script command
       ansible.builtin.command:
@@ -289,11 +311,6 @@
       ansible.builtin.fail:
         msg: >-
           Vast installer failed. stdout={{ vastai_host_install_run_result.stdout | trim }}
-  become: '{{ ansible_user_id != "root" }}'
-  when:
-    - vastai_host_install_execute
-    - vastai_host_install_mode in ['local', 'remote']
-    - vastai_host_account_identity_effective | length > 0
 - name: Deploy Vast.ai service unit
   ansible.builtin.template:
     src: vastai.service.j2
