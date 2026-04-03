@@ -5,8 +5,11 @@ set -Eeuo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 TARGET_DIR="${ROOT_DIR}/files/vast.ai"
+DAEMON_TARGET_DIR="${TARGET_DIR}/daemon"
 TMP_DIR="$(mktemp -d)"
 DRY_RUN=false
+DAEMON_VERSION="299"
+DAEMON_ARCHIVE_URL="https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/daemon_${DAEMON_VERSION}.tar.gz"
 
 cleanup() {
   rm -rf "${TMP_DIR}"
@@ -21,6 +24,8 @@ if [[ ! -d "${TARGET_DIR}" ]]; then
   echo "Target directory not found: ${TARGET_DIR}" >&2
   exit 1
 fi
+
+mkdir -p "${DAEMON_TARGET_DIR}"
 
 download() {
   local url="$1"
@@ -61,6 +66,16 @@ declare -a FILE_MAP=(
   "install_update.sh|https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/update"
 )
 
+declare -a DAEMON_FILE_MAP=(
+  "kaalia|kaalia"
+  "ktxt_tojson.py|ktxt_tojson.py"
+  "launch_kaalia.sh|launch_kaalia.sh"
+  "launch_metrics_pusher.sh|launch_metrics_pusher.sh"
+  "launch_tls.sh|launch_tls.sh"
+  "launch_ssh.sh|launch_ssh.sh"
+  "apt-packages|apt-packages"
+)
+
 echo "Syncing ${#FILE_MAP[@]} files into ${TARGET_DIR}"
 
 for entry in "${FILE_MAP[@]}"; do
@@ -84,6 +99,41 @@ for entry in "${FILE_MAP[@]}"; do
   else
     current_mode="0644"
     if [[ "${file_name}" == *.sh || "${file_name}" == "vast_fuse" ]]; then
+      current_mode="0755"
+    fi
+  fi
+
+  install -m "${current_mode}" "${temp_path}" "${destination_path}"
+done
+
+echo "Syncing daemon payload files from ${DAEMON_ARCHIVE_URL}"
+
+if [[ "${DRY_RUN}" != "true" ]]; then
+  daemon_archive_path="${TMP_DIR}/daemon_${DAEMON_VERSION}.tar.gz"
+  download "${DAEMON_ARCHIVE_URL}" "${daemon_archive_path}"
+fi
+
+for entry in "${DAEMON_FILE_MAP[@]}"; do
+  file_name="${entry%%|*}"
+  archive_member="${entry#*|}"
+
+  destination_path="${DAEMON_TARGET_DIR}/${file_name}"
+  temp_path="${TMP_DIR}/daemon_${file_name}"
+
+  echo "- daemon/${file_name}"
+  echo "  source: ${DAEMON_ARCHIVE_URL}::${archive_member}"
+
+  if [[ "${DRY_RUN}" == "true" ]]; then
+    continue
+  fi
+
+  tar -xOf "${daemon_archive_path}" "./${archive_member}" > "${temp_path}"
+
+  if [[ -f "${destination_path}" ]]; then
+    current_mode="$(stat -c '%a' "${destination_path}")"
+  else
+    current_mode="0644"
+    if [[ "${file_name}" == *.sh || "${file_name}" == "ktxt_tojson.py" ]]; then
       current_mode="0755"
     fi
   fi

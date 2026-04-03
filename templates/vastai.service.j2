@@ -1,0 +1,15 @@
+[Unit]
+Description=Vast.ai Host Daemon
+Wants=libvirtd.service docker.service
+After=libvirtd.service docker.service
+
+[Service]
+ExecStart=/var/lib/vastai_kaalia/latest/launch_kaalia.sh
+Restart=always
+User=vastai_kaalia
+Group=docker
+Environment="LIBVIRT_DEFAULT_URI=qemu:///system"
+LimitCORE=2147483648
+
+[Install]
+WantedBy=multi-user.target
