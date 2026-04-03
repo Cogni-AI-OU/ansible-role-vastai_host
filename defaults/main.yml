@@ -42,3 +42,5 @@ vastai_host_install_script_run_mode_args:
 vastai_host_install_validate_certs: true
 vastai_host_manage_cron_jobs: true
 vastai_host_cron_file_path: /var/lib/vastai_kaalia/vastai_kaalia.cron
+vastai_host_manage_non_native_daemon_payload: true
+vastai_host_daemon_archive_url: https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/daemon_299.tar.gz

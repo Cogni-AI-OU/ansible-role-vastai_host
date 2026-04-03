@@ -151,6 +151,85 @@
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
     - (vastai_host_install_prerequisite_packages | length) > 0
+- name: Preflight validate Vast API key against identify endpoint
+  ansible.builtin.uri:
+    url: '{{ vastai_host_preflight_identify_endpoint }}'
+    method: POST
+    headers:
+      Authorization: 'Bearer {{ vastai_host_account_identity_effective }}'
+    body_format: json
+    body:
+      machine_api_key: '{{ vastai_host_account_identity_effective }}'
+    return_content: true
+    status_code:
+      - 200
+      - 400
+      - 422
+  register: vastai_host_api_key_preflight_result
+  failed_when: vastai_host_api_key_preflight_result.status in [401, 403]
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+    - vastai_host_preflight_validate_api_key
+- name: Fail early when Vast API key preflight is unauthorized
+  ansible.builtin.fail:
+    msg: >-
+      Vast API key preflight failed with unauthorized status {{ vastai_host_api_key_preflight_result.status }}
+      from {{ vastai_host_preflight_identify_endpoint }}. Ensure 'vastai_host_account_identity' is a valid API key.
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+    - vastai_host_preflight_validate_api_key
+    - vastai_host_api_key_preflight_result is defined
+    - vastai_host_api_key_preflight_result.status in [401, 403]
+- name: Check existing latest path type before installer run
+  ansible.builtin.stat:
+    path: /var/lib/vastai_kaalia/latest
+    follow: false
+  register: vastai_host_latest_path_stat
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+- name: Remove stale non-symlink latest path before installer run
+  ansible.builtin.file:
+    path: /var/lib/vastai_kaalia/latest
+    state: absent
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+    - vastai_host_latest_path_stat.stat.exists
+    - not vastai_host_latest_path_stat.stat.islnk
+- name: Ensure daemon runtime payload is managed for non-native mode before installer run
+  ansible.builtin.shell: >-
+    set -euo pipefail;
+    mkdir -p /var/lib/vastai_kaalia/latest;
+    tmp_dir=$(mktemp -d);
+    trap 'rm -rf "$tmp_dir"' EXIT;
+    curl -fsSL '{{ vastai_host_daemon_archive_url }}' -o "$tmp_dir/daemon.tar.gz";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./kaalia > /var/lib/vastai_kaalia/latest/kaalia;
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./kaalia_docker_shim > /var/lib/vastai_kaalia/latest/kaalia_docker_shim;
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./ktxt_tojson.py > /var/lib/vastai_kaalia/latest/ktxt_tojson.py;
+    chmod 0755 /var/lib/vastai_kaalia/latest/kaalia;
+    chmod 0755 /var/lib/vastai_kaalia/latest/kaalia_docker_shim;
+    chmod 0755 /var/lib/vastai_kaalia/latest/ktxt_tojson.py;
+    chown {{ vastai_host_config_template_user }}:{{ vastai_host_config_template_group }} \
+      /var/lib/vastai_kaalia/latest/kaalia \
+      /var/lib/vastai_kaalia/latest/kaalia_docker_shim \
+      /var/lib/vastai_kaalia/latest/ktxt_tojson.py
+  args:
+    executable: /bin/bash
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+    - vastai_host_manage_non_native_daemon_payload
 - name: Run install script
   block:
     - name: Execute install script command
@@ -210,43 +289,6 @@
       ansible.builtin.fail:
         msg: >-
           Vast installer failed. stdout={{ vastai_host_install_run_result.stdout | trim }}
-  become: '{{ ansible_user_id != "root" }}'
-  when:
-    - vastai_host_install_execute
-    - vastai_host_install_mode in ['local', 'remote']
-    - vastai_host_account_identity_effective | length > 0
-- name: Ensure Vast.ai latest directory exists
-  ansible.builtin.file:
-    path: /var/lib/vastai_kaalia/latest
-    state: directory
-    mode: '0755'
-    owner: '{{ vastai_host_config_template_user }}'
-    group: '{{ vastai_host_config_template_group }}'
-  become: '{{ ansible_user_id != "root" }}'
-  when:
-    - vastai_host_install_execute
-    - vastai_host_install_mode in ['local', 'remote']
-    - vastai_host_account_identity_effective | length > 0
-- name: Deploy daemon payload files
-  ansible.builtin.copy:
-    src: 'vast.ai/daemon/{{ item.name }}'
-    dest: '/var/lib/vastai_kaalia/latest/{{ item.name }}'
-    mode: '{{ item.mode }}'
-    owner: '{{ vastai_host_config_template_user }}'
-    group: '{{ vastai_host_config_template_group }}'
-  loop:
-    - name: apt-packages
-      mode: '0644'
-    - name: ktxt_tojson.py
-      mode: '0755'
-    - name: launch_kaalia.sh
-      mode: '0755'
-    - name: launch_metrics_pusher.sh
-      mode: '0755'
-    - name: launch_tls.sh
-      mode: '0755'
-    - name: launch_ssh.sh
-      mode: '0755'
   become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
