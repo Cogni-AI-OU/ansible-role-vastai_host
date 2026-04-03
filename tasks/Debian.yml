@@ -166,6 +166,11 @@
     - vastai_host_account_identity_effective | length > 0
     - (vastai_host_install_prerequisite_packages | length) > 0
 - name: Run install script
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
   block:
     - name: Execute install script command
       ansible.builtin.command:
@@ -224,11 +229,6 @@
       ansible.builtin.fail:
         msg: >-
           Vast installer failed. stdout={{ vastai_host_install_run_result.stdout | trim }}
-  become: '{{ ansible_user_id != "root" }}'
-  when:
-    - vastai_host_install_execute
-    - vastai_host_install_mode in ['local', 'remote']
-    - vastai_host_account_identity_effective | length > 0
 - name: Ensure Vast.ai latest directory exists
   ansible.builtin.file:
     path: /var/lib/vastai_kaalia/latest
