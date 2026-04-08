@@ -156,7 +156,7 @@
     url: '{{ vastai_host_preflight_identify_endpoint }}'
     method: POST
     headers:
-      Authorization: 'Bearer {{ vastai_host_account_identity_effective }}'
+      Authorization: Bearer {{ vastai_host_account_identity_effective }}
     body_format: json
     body:
       machine_api_key: '{{ vastai_host_account_identity_effective }}'
@@ -176,7 +176,8 @@
   ansible.builtin.fail:
     msg: >-
       Vast API key preflight failed with unauthorized status {{ vastai_host_api_key_preflight_result.status }}
-      from {{ vastai_host_preflight_identify_endpoint }}. Ensure 'vastai_host_account_identity' is a valid API key.
+      from {{ vastai_host_preflight_identify_endpoint }}. Ensure 'vastai_host_account_identity' is a valid API
+      key.
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -217,7 +218,8 @@
     tar -xOf "$tmp_dir/daemon.tar.gz" ./kaalia_docker_shim > "$latest_dir/kaalia_docker_shim";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./ktxt_tojson.py > "$latest_dir/ktxt_tojson.py";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_kaalia.sh > "$latest_dir/launch_kaalia.sh";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_metrics_pusher.sh | install -m 0755 /dev/stdin "$latest_dir/launch_metrics_pusher.sh";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_metrics_pusher.sh | \
+      install -m 0755 /dev/stdin "$latest_dir/launch_metrics_pusher.sh";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_tls.sh > "$latest_dir/launch_tls.sh";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_ssh.sh > "$latest_dir/launch_ssh.sh";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./apt-packages > "$latest_dir/apt-packages";
@@ -273,39 +275,35 @@
             )
             | default('', true)
           }}
-
     - name: Create temporary extraction directory
       ansible.builtin.tempfile:
         state: directory
         prefix: vastai_install_logs_
       register: vastai_host_install_log_extract_dir
       when: vastai_host_install_log_archive_path | length > 0
-
     - name: Extract installer log archive
       ansible.builtin.unarchive:
         src: '{{ vastai_host_install_log_archive_path }}'
         dest: '{{ vastai_host_install_log_extract_dir.path }}'
         remote_src: true
       when: vastai_host_install_log_archive_path | length > 0
-
     - name: Print extracted vast_host_install.log
       ansible.builtin.command:
         cmd: >-
           bash -lc 'set -e;
-          f=$(find "{{ vastai_host_install_log_extract_dir.path }}" -type f -name vast_host_install.log | head -n 1);
+          f=$(find "{{ vastai_host_install_log_extract_dir.path }}" -type f -name vast_host_install.log | head
+          -n 1);
           [[ -n "$f" ]];
           cat "$f"'
       register: vastai_host_install_log_output
       changed_when: false
       when: vastai_host_install_log_archive_path | length > 0
-
     - name: Show extracted vast_host_install.log
       ansible.builtin.debug:
         msg: '{{ vastai_host_install_log_output.stdout }}'
       when:
         - vastai_host_install_log_archive_path | length > 0
         - vastai_host_install_log_output is defined
-
     - name: Fail install when installer reports failure
       ansible.builtin.fail:
         msg: >-
@@ -363,7 +361,7 @@
     - vastai_host_manage_cron_jobs
 - name: Install Vast.ai managed user crontab
   ansible.builtin.command:
-    cmd: 'crontab -u vastai_kaalia {{ vastai_host_cron_file_path }}'
+    cmd: crontab -u vastai_kaalia {{ vastai_host_cron_file_path }}
   changed_when: vastai_host_cron_template_result.changed
   become: '{{ ansible_user_id != "root" }}'
   when:
