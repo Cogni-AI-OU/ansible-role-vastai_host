@@ -338,7 +338,7 @@
     - vastai_host_install_start_daemon
 - name: Start and enable Vast.ai metrics service
   ansible.builtin.systemd:
-    name: vast_metrics.service
+    name: vast_metrics
     enabled: true
     state: started
   become: '{{ ansible_user_id != "root" }}'
