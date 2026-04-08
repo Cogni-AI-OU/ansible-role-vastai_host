@@ -333,7 +333,7 @@
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
     - vastai_host_install_start_daemon
-- name: Start Vast.ai metrics daemon
+- name: Start and enable Vast.ai metrics daemon
   ansible.builtin.systemd:
     name: vast_metrics.service
     enabled: true
