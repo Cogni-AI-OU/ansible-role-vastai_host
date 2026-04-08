@@ -218,8 +218,8 @@
     tar -xOf "$tmp_dir/daemon.tar.gz" ./kaalia_docker_shim > "$latest_dir/kaalia_docker_shim";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./ktxt_tojson.py > "$latest_dir/ktxt_tojson.py";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_kaalia.sh > "$latest_dir/launch_kaalia.sh";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_metrics_pusher.sh | \
-      install -m 0755 /dev/stdin "$latest_dir/launch_metrics_pusher.sh";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_metrics_pusher.sh > "$tmp_dir/launch_metrics_pusher.sh";
+    install -m 0755 "$tmp_dir/launch_metrics_pusher.sh" "$latest_dir/launch_metrics_pusher.sh";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_tls.sh > "$latest_dir/launch_tls.sh";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_ssh.sh > "$latest_dir/launch_ssh.sh";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./apt-packages > "$latest_dir/apt-packages";
@@ -333,7 +333,7 @@
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
     - vastai_host_install_start_daemon
-- name: Ensure Vast.ai metrics daemon is started
+- name: Start Vast.ai metrics daemon
   ansible.builtin.systemd:
     name: vast_metrics.service
     enabled: true
