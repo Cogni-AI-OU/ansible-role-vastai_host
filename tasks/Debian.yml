@@ -48,10 +48,21 @@
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'local'
+- name: Ensure docker group exists for scripted mode service user
+  ansible.builtin.group:
+    name: docker
+    state: present
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
 - name: Ensure scripted mode service user exists
   ansible.builtin.user:
     name: '{{ vastai_host_config_template_user }}'
+    append: true
     group: '{{ vastai_host_config_template_group }}'
+    groups: docker
     system: true
     shell: /usr/sbin/nologin
     create_home: false
