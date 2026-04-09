@@ -183,7 +183,7 @@
     url: '{{ vastai_host_preflight_identify_endpoint }}'
     method: POST
     headers:
-      Authorization: 'Bearer {{ vastai_host_account_identity_effective }}'
+      Authorization: Bearer {{ vastai_host_account_identity_effective }}
     body_format: json
     body:
       machine_api_key: '{{ vastai_host_account_identity_effective }}'
@@ -203,7 +203,8 @@
   ansible.builtin.fail:
     msg: >-
       Vast API key preflight failed with unauthorized status {{ vastai_host_api_key_preflight_result.status }}
-      from {{ vastai_host_preflight_identify_endpoint }}. Ensure 'vastai_host_account_identity' is a valid API key.
+      from {{ vastai_host_preflight_identify_endpoint }}. Ensure 'vastai_host_account_identity' is a valid API
+      key.
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -320,7 +321,8 @@
       ansible.builtin.command:
         cmd: >-
           bash -lc 'set -e;
-          f=$(find "{{ vastai_host_install_log_extract_dir.path }}" -type f -name vast_host_install.log | head -n 1);
+          f=$(find "{{ vastai_host_install_log_extract_dir.path }}" -type f -name vast_host_install.log | head
+          -n 1);
           [[ -n "$f" ]];
           cat "$f"'
       register: vastai_host_install_log_output
@@ -407,7 +409,7 @@
     - vastai_host_manage_cron_jobs
 - name: Install Vast.ai managed user crontab
   ansible.builtin.command:
-    cmd: 'crontab -u vastai_kaalia {{ vastai_host_cron_file_path }}'
+    cmd: crontab -u vastai_kaalia {{ vastai_host_cron_file_path }}
   changed_when: vastai_host_cron_template_result.changed
   become: '{{ ansible_user_id != "root" }}'
   when:
