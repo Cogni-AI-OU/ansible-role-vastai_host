@@ -259,8 +259,8 @@
     chmod 0755 "$latest_dir/launch_tls.sh";
     chmod 0755 "$latest_dir/launch_ssh.sh";
     chmod 0644 "$latest_dir/apt-packages";
-    owner_group="{{ vastai_host_config_template_user_effective }}:{{ vastai_host_config_template_group_effective
-    }}";
+    owner_user="{{ vastai_host_config_template_user_effective }}";
+    owner_group="{{ vastai_host_config_template_group_effective }}";
     for daemon_file in \
       "$latest_dir/kaalia" \
       "$latest_dir/kaalia_docker_shim" \
@@ -271,7 +271,7 @@
       "$latest_dir/launch_tls.sh" \
       "$latest_dir/launch_ssh.sh" \
       "$latest_dir/apt-packages"; do
-      chown "$owner_group" "$daemon_file";
+      chown "$owner_user:$owner_group" "$daemon_file";
     done
   args:
     creates: /var/lib/vastai_kaalia/latest/machine_metrics_pusher.py
