@@ -17,6 +17,33 @@
 - name: Set effective account identity
   ansible.builtin.set_fact:
     vastai_host_account_identity_effective: '{{ vastai_host_account_identity | trim }}'
+- name: Check configured template owner account
+  ansible.builtin.getent:
+    database: passwd
+    key: '{{ vastai_host_config_template_user }}'
+  register: vastai_host_config_template_user_getent
+  failed_when: false
+  changed_when: false
+- name: Set effective template ownership
+  ansible.builtin.set_fact:
+    vastai_host_config_template_user_effective: >-
+      {{
+        vastai_host_config_template_user
+        if (
+          vastai_host_config_template_user_getent.ansible_facts.getent_passwd is defined
+          and (vastai_host_config_template_user in vastai_host_config_template_user_getent.ansible_facts.getent_passwd)
+        )
+        else 'root'
+      }}
+    vastai_host_config_template_group_effective: >-
+      {{
+        vastai_host_config_template_group
+        if (
+          vastai_host_config_template_user_getent.ansible_facts.getent_passwd is defined
+          and (vastai_host_config_template_user in vastai_host_config_template_user_getent.ansible_facts.getent_passwd)
+        )
+        else 'root'
+      }}
 - name: Set install script command arguments
   ansible.builtin.set_fact:
     vastai_host_install_command_argv: >-
@@ -83,8 +110,8 @@
     src: host_port_range.j2
     dest: /var/lib/vastai_kaalia/host_port_range
     mode: '0644'
-    owner: '{{ vastai_host_config_template_user }}'
-    group: '{{ vastai_host_config_template_group }}'
+    owner: '{{ vastai_host_config_template_user_effective }}'
+    group: '{{ vastai_host_config_template_group_effective }}'
   become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
@@ -95,8 +122,8 @@
     src: host_ipaddr.j2
     dest: /var/lib/vastai_kaalia/host_ipaddr
     mode: '0644'
-    owner: '{{ vastai_host_config_template_user }}'
-    group: '{{ vastai_host_config_template_group }}'
+    owner: '{{ vastai_host_config_template_user_effective }}'
+    group: '{{ vastai_host_config_template_group_effective }}'
   become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
@@ -108,8 +135,8 @@
     src: vast_server.j2
     dest: /var/lib/vastai_kaalia/vast_server
     mode: '0644'
-    owner: '{{ vastai_host_config_template_user }}'
-    group: '{{ vastai_host_config_template_group }}'
+    owner: '{{ vastai_host_config_template_user_effective }}'
+    group: '{{ vastai_host_config_template_group_effective }}'
   become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
@@ -120,8 +147,8 @@
     src: environment.j2
     dest: /var/lib/vastai_kaalia/environment
     mode: '0644'
-    owner: '{{ vastai_host_config_template_user }}'
-    group: '{{ vastai_host_config_template_group }}'
+    owner: '{{ vastai_host_config_template_user_effective }}'
+    group: '{{ vastai_host_config_template_group_effective }}'
   become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
@@ -231,7 +258,7 @@
     chmod 0755 "$latest_dir/launch_tls.sh";
     chmod 0755 "$latest_dir/launch_ssh.sh";
     chmod 0644 "$latest_dir/apt-packages";
-    chown {{ vastai_host_config_template_user }}:{{ vastai_host_config_template_group }} \
+    chown {{ vastai_host_config_template_user_effective }}:{{ vastai_host_config_template_group_effective }} \
       /var/lib/vastai_kaalia/latest/kaalia \
       /var/lib/vastai_kaalia/latest/kaalia_docker_shim \
       /var/lib/vastai_kaalia/latest/ktxt_tojson.py \
@@ -277,21 +304,18 @@
             )
             | default('', true)
           }}
-
     - name: Create temporary extraction directory
       ansible.builtin.tempfile:
         state: directory
         prefix: vastai_install_logs_
       register: vastai_host_install_log_extract_dir
       when: vastai_host_install_log_archive_path | length > 0
-
     - name: Extract installer log archive
       ansible.builtin.unarchive:
         src: '{{ vastai_host_install_log_archive_path }}'
         dest: '{{ vastai_host_install_log_extract_dir.path }}'
         remote_src: true
       when: vastai_host_install_log_archive_path | length > 0
-
     - name: Print extracted vast_host_install.log
       ansible.builtin.command:
         cmd: >-
@@ -302,14 +326,12 @@
       register: vastai_host_install_log_output
       changed_when: false
       when: vastai_host_install_log_archive_path | length > 0
-
     - name: Show extracted vast_host_install.log
       ansible.builtin.debug:
         msg: '{{ vastai_host_install_log_output.stdout }}'
       when:
         - vastai_host_install_log_archive_path | length > 0
         - vastai_host_install_log_output is defined
-
     - name: Fail install when installer reports failure
       ansible.builtin.fail:
         msg: >-
@@ -326,6 +348,7 @@
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
+    - vastai_host_install_script_run_mode == 'daemon'
 - name: Deploy Vast.ai metrics service unit
   ansible.builtin.template:
     src: vast_metrics.service.j2
@@ -351,6 +374,7 @@
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
+    - vastai_host_install_script_run_mode == 'daemon'
     - vastai_host_install_start_daemon
 - name: Ensure Vast.ai metrics service is started
   ansible.builtin.systemd:
@@ -371,14 +395,15 @@
     src: vastai_kaalia.cron.j2
     dest: '{{ vastai_host_cron_file_path }}'
     mode: '0644'
-    owner: '{{ vastai_host_config_template_user }}'
-    group: '{{ vastai_host_config_template_group }}'
+    owner: '{{ vastai_host_config_template_user_effective }}'
+    group: '{{ vastai_host_config_template_group_effective }}'
   register: vastai_host_cron_template_result
   become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
+    - vastai_host_install_script_run_mode == 'daemon'
     - vastai_host_manage_cron_jobs
 - name: Install Vast.ai managed user crontab
   ansible.builtin.command:
@@ -389,6 +414,7 @@
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
+    - vastai_host_install_script_run_mode == 'daemon'
     - vastai_host_manage_cron_jobs
 - name: Mark scripted install completion
   ansible.builtin.copy:
