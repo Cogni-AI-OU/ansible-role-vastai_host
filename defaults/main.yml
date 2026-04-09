@@ -1,7 +1,7 @@
 ---
 vastai_host_account_identity: >-
   {{
-    lookup("ansible.builtin.env", "VASTAI_API_KEY")
+    lookup("ansible.builtin.env", "VAST_API_KEY")
     | default("", true)
   }}
 vastai_host_install_execute: true
