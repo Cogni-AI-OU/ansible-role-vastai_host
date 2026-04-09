@@ -259,16 +259,20 @@
     chmod 0755 "$latest_dir/launch_tls.sh";
     chmod 0755 "$latest_dir/launch_ssh.sh";
     chmod 0644 "$latest_dir/apt-packages";
-    chown {{ vastai_host_config_template_user_effective }}:{{ vastai_host_config_template_group_effective }} \
-      /var/lib/vastai_kaalia/latest/kaalia \
-      /var/lib/vastai_kaalia/latest/kaalia_docker_shim \
-      /var/lib/vastai_kaalia/latest/ktxt_tojson.py \
-      /var/lib/vastai_kaalia/latest/launch_kaalia.sh \
-      /var/lib/vastai_kaalia/latest/launch_metrics_pusher.sh \
-      /var/lib/vastai_kaalia/latest/machine_metrics_pusher.py \
-      /var/lib/vastai_kaalia/latest/launch_tls.sh \
-      /var/lib/vastai_kaalia/latest/launch_ssh.sh \
-      /var/lib/vastai_kaalia/latest/apt-packages
+    owner_group="{{ vastai_host_config_template_user_effective }}:{{ vastai_host_config_template_group_effective
+    }}";
+    for daemon_file in \
+      "$latest_dir/kaalia" \
+      "$latest_dir/kaalia_docker_shim" \
+      "$latest_dir/ktxt_tojson.py" \
+      "$latest_dir/launch_kaalia.sh" \
+      "$latest_dir/launch_metrics_pusher.sh" \
+      "$latest_dir/machine_metrics_pusher.py" \
+      "$latest_dir/launch_tls.sh" \
+      "$latest_dir/launch_ssh.sh" \
+      "$latest_dir/apt-packages"; do
+      chown "$owner_group" "$daemon_file";
+    done
   args:
     creates: /var/lib/vastai_kaalia/latest/machine_metrics_pusher.py
     executable: /bin/bash
