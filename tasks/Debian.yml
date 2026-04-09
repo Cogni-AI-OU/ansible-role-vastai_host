@@ -218,6 +218,7 @@
     tar -xOf "$tmp_dir/daemon.tar.gz" ./ktxt_tojson.py > "$latest_dir/ktxt_tojson.py";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_kaalia.sh > "$latest_dir/launch_kaalia.sh";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_metrics_pusher.sh > "$latest_dir/launch_metrics_pusher.sh";
+    tar -xOf "$tmp_dir/daemon.tar.gz" ./machine_metrics_pusher.py > "$latest_dir/machine_metrics_pusher.py";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_tls.sh > "$latest_dir/launch_tls.sh";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_ssh.sh > "$latest_dir/launch_ssh.sh";
     tar -xOf "$tmp_dir/daemon.tar.gz" ./apt-packages > "$latest_dir/apt-packages";
@@ -226,6 +227,7 @@
     chmod 0755 "$latest_dir/ktxt_tojson.py";
     chmod 0755 "$latest_dir/launch_kaalia.sh";
     chmod 0755 "$latest_dir/launch_metrics_pusher.sh";
+    chmod 0755 "$latest_dir/machine_metrics_pusher.py";
     chmod 0755 "$latest_dir/launch_tls.sh";
     chmod 0755 "$latest_dir/launch_ssh.sh";
     chmod 0644 "$latest_dir/apt-packages";
@@ -235,11 +237,12 @@
       /var/lib/vastai_kaalia/latest/ktxt_tojson.py \
       /var/lib/vastai_kaalia/latest/launch_kaalia.sh \
       /var/lib/vastai_kaalia/latest/launch_metrics_pusher.sh \
+      /var/lib/vastai_kaalia/latest/machine_metrics_pusher.py \
       /var/lib/vastai_kaalia/latest/launch_tls.sh \
       /var/lib/vastai_kaalia/latest/launch_ssh.sh \
       /var/lib/vastai_kaalia/latest/apt-packages
   args:
-    creates: /var/lib/vastai_kaalia/latest/launch_kaalia.sh
+    creates: /var/lib/vastai_kaalia/latest/machine_metrics_pusher.py
     executable: /bin/bash
   become: '{{ ansible_user_id != "root" }}'
   when:
@@ -323,6 +326,19 @@
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
+- name: Deploy Vast.ai metrics service unit
+  ansible.builtin.template:
+    src: vast_metrics.service.j2
+    dest: /etc/systemd/system/vast_metrics.service
+    mode: '0644'
+    owner: root
+    group: root
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+    - vastai_host_install_script_run_mode == 'daemon'
 - name: Ensure Vast.ai daemon is started
   ansible.builtin.systemd:
     name: vastai
@@ -335,6 +351,20 @@
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
+    - vastai_host_install_start_daemon
+- name: Ensure Vast.ai metrics service is started
+  ansible.builtin.systemd:
+    name: vast_metrics
+    daemon_reload: true
+    enabled: true
+    state: started
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - not ansible_check_mode
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+    - vastai_host_install_script_run_mode == 'daemon'
     - vastai_host_install_start_daemon
 - name: Render Vast.ai managed cron file
   ansible.builtin.template:
