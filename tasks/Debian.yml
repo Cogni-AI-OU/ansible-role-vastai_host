@@ -78,6 +78,19 @@
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'remote'
+- name: Ensure vastai_kaalia user exists before config file deployment
+  ansible.builtin.user:
+    name: '{{ vastai_host_config_template_user }}'
+    system: true
+    shell: /bin/bash
+    create_home: false
+    home: /var/lib/vastai_kaalia
+    state: present
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
 - name: Deploy host port range file
   ansible.builtin.template:
     src: host_port_range.j2
