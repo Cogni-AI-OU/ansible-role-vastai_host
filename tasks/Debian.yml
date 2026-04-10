@@ -165,10 +165,41 @@
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
+- name: Query installed apt packages eligible for unhold before installer run
+  ansible.builtin.command:
+    cmd: >-
+      dpkg-query --show --showformat='${Package}\n' {{ vastai_host_install_unhold_package_list | join(' ') }}
+  become: '{{ ansible_user_id != "root" }}'
+  register: vastai_host_install_unhold_installed_query
+  changed_when: false
+  failed_when: false
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+    - vastai_host_install_unhold_packages_before_run
+    - (vastai_host_install_unhold_package_list | length) > 0
+
+- name: Set unhold apt package targets before installer run
+  ansible.builtin.set_fact:
+    vastai_host_install_unhold_targets: >-
+      {{
+        vastai_host_install_unhold_installed_query.stdout_lines
+        | default([])
+        | select('match', '.+')
+        | list
+      }}
+  when:
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_account_identity_effective | length > 0
+    - vastai_host_install_unhold_packages_before_run
+    - (vastai_host_install_unhold_package_list | length) > 0
+
 - name: Unhold apt packages before installer run
   ansible.builtin.command:
     cmd: >-
-      apt-mark unhold {{ vastai_host_install_unhold_package_list | join(' ') }}
+      apt-mark unhold {{ vastai_host_install_unhold_targets | join(' ') }}
   become: '{{ ansible_user_id != "root" }}'
   register: vastai_host_install_unhold_result
   changed_when: "'Canceled hold on' in vastai_host_install_unhold_result.stdout"
@@ -177,7 +208,7 @@
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
     - vastai_host_install_unhold_packages_before_run
-    - (vastai_host_install_unhold_package_list | length) > 0
+    - (vastai_host_install_unhold_targets | default([]) | length) > 0
 - name: Install prerequisite apt packages before installer run
   ansible.builtin.apt:
     name: '{{ vastai_host_install_prerequisite_packages }}'
