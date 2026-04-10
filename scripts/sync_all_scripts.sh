@@ -134,7 +134,11 @@ for entry in "${DAEMON_FILE_MAP[@]}"; do
     current_mode="$(stat -c '%a' "${destination_path}")"
   else
     current_mode="0644"
-    if [[ "${file_name}" == *.sh || "${file_name}" == "ktxt_tojson.py" || "${file_name}" == "machine_metrics_pusher.py" ]]; then
+    if [[ "${file_name}" == *.sh || \
+      "${file_name}" == "kaalia" || \
+      "${file_name}" == "kaalia_docker_shim" || \
+      "${file_name}" == "ktxt_tojson.py" || \
+      "${file_name}" == "machine_metrics_pusher.py" ]]; then
       current_mode="0755"
     fi
   fi
