@@ -114,16 +114,11 @@ For specific tasks, use the following specialized agent instructions:
 - Use the project linting/validation tools to confirm your changes meet the coding standard.
 - If the repo uses git hooks, run them to validate your changes.
 
-### Linting and Validation
+## Tooling
 
-```bash
-# Run all pre-commit checks
-pre-commit run -a
-
-# Run specific checks
-pre-commit run markdownlint -a
-pre-commit run yamllint -a
-```
+- Use MCP when possible.
+- Use `pre-commit` for linting and validation if installed.
+- For dumping links use `links -dump` if installed.
 
 ### Understanding the Task
 
