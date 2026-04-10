@@ -22,9 +22,14 @@ Read these Agent files when working in corresponding dirs:
 
 - [daemon/](daemon/AGENTS.md)
 
-## Testing instructions
+## Testing Instructions
 
 - N/A - Files are synced from remote
+
+## Agents Instructions
+
+Files in this directory are upstream-synced from Vast.ai and should not be reviewed for
+syntax errors, missing implementations, or code style. Do not flag incomplete scripts.
 
 ## Troubleshooting
 
