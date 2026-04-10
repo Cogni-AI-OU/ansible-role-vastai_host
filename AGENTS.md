@@ -23,6 +23,7 @@ Read these Agent files when working in corresponding dirs:
 - [`.github/prompts/`](.github/prompts/AGENTS.md)
 - [`files/vast.ai/`](files/vast.ai/AGENTS.md)
 - [`files/vast.ai/daemon/`](files/vast.ai/daemon/AGENTS.md)
+- [`templates/`](templates/AGENTS.md)
 
 Note: Keep this list up-to-date.
 
