@@ -531,6 +531,8 @@
   ansible.builtin.file:
     path: /var/lib/vastai_kaalia/.ssh/authorized_keys
     state: touch
+    access_time: preserve
+    modification_time: preserve
     mode: '0600'
     owner: vastai_kaalia
     group: nogroup
