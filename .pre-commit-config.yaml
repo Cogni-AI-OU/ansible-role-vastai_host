@@ -57,8 +57,6 @@ repos:
         types:
           - yaml
         # Excluded due to https://github.com/lyz-code/yamlfix/issues/310 which breaks multiline formatting.
-        # Also excluding workflows that require blank lines for readability.
-        exclude: (\.github/workflows/claude-review\.yml|\.github/workflows/claude\.yml)
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:

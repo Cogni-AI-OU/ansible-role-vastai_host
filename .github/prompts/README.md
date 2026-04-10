@@ -1,6 +1,6 @@
 # Agent Prompts
 
-This directory contains prompt files that can be used with AI agents (Claude Code, GitHub Copilot, etc.)
+This directory contains prompt files that can be used with AI agents (GitHub Copilot, etc.)
 to perform standardized tasks across repositories.
 
 - For the agent-facing prompt catalog, see [AGENTS.md](AGENTS.md).
@@ -14,7 +14,6 @@ This directory supports two types of prompt formats:
 Markdown prompts (`.prompt.md`) are human-readable prompt templates designed for use in:
 
 - **VS Code**: Reference these prompts in GitHub Copilot Chat or other AI assistants within your IDE
-- **Claude Code**: Copy and paste content directly or reference the file URL
 - **Manual use**: Easy to read and adapt for any AI tool
 
 Markdown prompts are ideal for detailed, structured instructions with checklists and examples.
@@ -34,18 +33,6 @@ model configuration.
 ## How to Use
 
 ### Markdown Prompts (`.prompt.md`)
-
-#### With Claude Code
-
-1. **In an Issue or PR**: Mention `@claude` and provide the prompt content or reference the file:
-
-   ```text
-   @claude Please follow the checklist in
-   https://github.com/Cogni-AI-OU/.github/blob/main/.github/prompts/repository-setup.prompt.md
-   to review and update this repository's configuration.
-   ```
-
-2. **Directly**: Copy the prompt content and paste it into a Claude Code conversation.
 
 #### With GitHub Copilot (VS Code)
 
@@ -115,7 +102,7 @@ When creating prompt files:
 ### Example 1: Complete Repository Setup
 
 ```text
-@claude I need you to set up this repository following organization standards.
+I need you to set up this repository following organization standards.
 Please use the repository-setup.prompt.md checklist and:
 
 1. Review all configuration files
@@ -131,7 +118,7 @@ Report progress after each phase.
 ### Example 2: Partial Setup (Workflows Only)
 
 ```text
-@claude Please follow Phase 3 of the repository-setup.prompt.md to add
+Please follow Phase 3 of the repository-setup.prompt.md to add
 GitHub Actions workflows to this repository. Use workflow_call to reference
 remote workflows from Cogni-AI-OU/.github.
 ```
@@ -139,7 +126,7 @@ remote workflows from Cogni-AI-OU/.github.
 ### Example 3: Validation Only
 
 ```text
-@claude Please follow Phase 9 of repository-setup.prompt.md to validate
+Please follow Phase 9 of repository-setup.prompt.md to validate
 all configuration files in this repository. Run linters and report any issues.
 ```
 
@@ -174,7 +161,6 @@ See: [Storing prompts in GitHub repositories](https://docs.github.com/en/github-
 ## Additional Resources
 
 - [AGENTS.md](../../AGENTS.md) - General agent guidance
-- [CLAUDE.md](../../CLAUDE.md) - Claude-specific configuration
 - [Copilot Instructions](../copilot-instructions.md) - Coding standards
 - [GitHub Actions Workflows](../workflows/) - Reusable workflows
 - [Instructions](../instructions/) - Language-specific guidelines

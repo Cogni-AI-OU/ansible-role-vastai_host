@@ -46,8 +46,8 @@ Skills can be stored at different levels:
 
 | Level | Location | Scope |
 | ----- | -------- | ----- |
-| Project | `.github/skills/` or `.claude/skills/` | Single repository |
-| Personal | `~/.copilot/skills/` or `~/.claude/skills/` | All projects (CLI only) |
+| Project | `.github/skills/` | Single repository |
+| Personal | `~/.copilot/skills/` | All projects (CLI only) |
 
 ## How Copilot uses skills
 

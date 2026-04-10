@@ -131,7 +131,6 @@ This repository provides AI agent configurations for automated development.
 | File/Directory | Audience | Purpose |
 | -------------- | -------- | ------- |
 | [AGENTS.md](AGENTS.md) | All agents | Repository-specific guidance and workflows |
-| [CLAUDE.md](CLAUDE.md) | Claude | Claude-specific configuration |
 | [.github/copilot-instructions.md](.github/copilot-instructions.md) | Copilot | Coding standards and project context |
 | [.github/agents/](.github/agents/) | Orchestrators | Specialized agent configs for specific tasks |
 | [.github/skills/](.github/skills/) | All agents | Reusable capabilities (git, GitHub Actions, etc.) |
