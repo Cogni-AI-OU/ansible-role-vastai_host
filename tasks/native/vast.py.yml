@@ -9,3 +9,5 @@
     content: "#!/bin/sh\nexec python3 /var/lib/vastai_kaalia/vast.py \"$@\"\n"
     dest: /var/lib/vastai_kaalia/vast
     mode: '0755'
+    owner: '{{ vastai_host_config_template_user | default("vastai_kaalia") }}'
+    group: '{{ vastai_host_config_template_group | default("nogroup") }}'

@@ -71,6 +71,7 @@ declare -a DAEMON_FILE_MAP=(
   "ktxt_tojson.py|ktxt_tojson.py"
   "launch_kaalia.sh|launch_kaalia.sh"
   "launch_metrics_pusher.sh|launch_metrics_pusher.sh"
+  "machine_metrics_pusher.py|machine_metrics_pusher.py"
   "launch_tls.sh|launch_tls.sh"
   "launch_ssh.sh|launch_ssh.sh"
   "apt-packages|apt-packages"
@@ -133,7 +134,7 @@ for entry in "${DAEMON_FILE_MAP[@]}"; do
     current_mode="$(stat -c '%a' "${destination_path}")"
   else
     current_mode="0644"
-    if [[ "${file_name}" == *.sh || "${file_name}" == "ktxt_tojson.py" ]]; then
+    if [[ "${file_name}" == *.sh || "${file_name}" == "ktxt_tojson.py" || "${file_name}" == "machine_metrics_pusher.py" ]]; then
       current_mode="0755"
     fi
   fi

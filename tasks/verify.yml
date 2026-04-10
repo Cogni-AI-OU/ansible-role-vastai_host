@@ -17,6 +17,36 @@
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - (vastai_host_account_identity | trim) | length > 0
+- name: Check daemon launch script file
+  ansible.builtin.stat:
+    path: /var/lib/vastai_kaalia/latest/launch_kaalia.sh
+  register: vastai_host_daemon_launch_script_stat
+  when:
+    - ansible_os_family == 'Debian'
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_install_script_run_mode == 'daemon'
+    - (vastai_host_account_identity | trim) | length > 0
+- name: Check daemon metrics pusher script file
+  ansible.builtin.stat:
+    path: /var/lib/vastai_kaalia/latest/machine_metrics_pusher.py
+  register: vastai_host_daemon_metrics_pusher_stat
+  when:
+    - ansible_os_family == 'Debian'
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_install_script_run_mode == 'daemon'
+    - (vastai_host_account_identity | trim) | length > 0
+- name: Check daemon metrics launcher script file
+  ansible.builtin.stat:
+    path: /var/lib/vastai_kaalia/latest/launch_metrics_pusher.sh
+  register: vastai_host_daemon_metrics_launcher_stat
+  when:
+    - ansible_os_family == 'Debian'
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_install_script_run_mode == 'daemon'
+    - (vastai_host_account_identity | trim) | length > 0
 - name: Check deployed install script
   ansible.builtin.stat:
     path: '{{ vastai_host_install_script_destination }}'
@@ -43,6 +73,43 @@
     - not ansible_check_mode
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
+- name: Assert daemon launch script artifact
+  ansible.builtin.assert:
+    that:
+      - vastai_host_daemon_launch_script_stat.stat.exists
+    fail_msg: Scripted daemon install did not deploy latest/launch_kaalia.sh.
+  when:
+    - ansible_os_family == 'Debian'
+    - not ansible_check_mode
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_install_script_run_mode == 'daemon'
+    - (vastai_host_account_identity | trim) | length > 0
+- name: Assert daemon metrics pusher script artifact
+  ansible.builtin.assert:
+    that:
+      - vastai_host_daemon_metrics_pusher_stat.stat.exists
+    fail_msg: Scripted daemon install did not deploy latest/machine_metrics_pusher.py.
+  when:
+    - ansible_os_family == 'Debian'
+    - not ansible_check_mode
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_install_script_run_mode == 'daemon'
+    - (vastai_host_account_identity | trim) | length > 0
+- name: Assert daemon metrics launcher script artifact
+  ansible.builtin.assert:
+    that:
+      - vastai_host_daemon_metrics_launcher_stat.stat.exists
+      - vastai_host_daemon_metrics_launcher_stat.stat.executable
+    fail_msg: Scripted daemon install did not deploy executable latest/launch_metrics_pusher.sh.
+  when:
+    - ansible_os_family == 'Debian'
+    - not ansible_check_mode
+    - vastai_host_install_execute
+    - vastai_host_install_mode in ['local', 'remote']
+    - vastai_host_install_script_run_mode == 'daemon'
+    - (vastai_host_account_identity | trim) | length > 0
 - name: Assert native completion marker
   ansible.builtin.assert:
     that:
