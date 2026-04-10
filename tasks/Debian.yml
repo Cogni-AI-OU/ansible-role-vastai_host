@@ -490,3 +490,19 @@
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
   tags: vastai_host-native
+
+- name: Ensure vastai_kaalia SSH directory exists post install
+  ansible.builtin.file:
+    path: /var/lib/vastai_kaalia/.ssh
+    state: directory
+    mode: '0700'
+    owner: vastai_kaalia
+    group: nogroup
+  become: '{{ ansible_user_id != "root" }}'
+  when:
+    - vastai_host_install_execute
+    - >-
+      (
+        vastai_host_install_mode in ['local', 'remote']
+        and (vastai_host_account_identity_effective | length > 0)
+      ) or vastai_host_install_mode == 'native'
