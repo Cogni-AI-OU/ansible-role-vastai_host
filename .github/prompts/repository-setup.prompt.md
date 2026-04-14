@@ -117,20 +117,22 @@ exist. Do not skip items just because a file already exists.
     jobs:
       check:
         uses: Cogni-AI-OU/.github/.github/workflows/check.yml@main
+        with:
+          submodules: 'false'  # Set to 'true' or 'recursive' if repository uses submodules
     ```
 
   - Customize: Add additional jobs if needed for project-specific checks
 
-- [ ] **`.github/workflows/claude.yml`**
+- [ ] **`.github/workflows/opencode.yml`**
   - Check if file exists
-  - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/workflows/claude.yml`
-  - Purpose: Claude Code automation for AI-assisted development
+  - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/workflows/opencode.yml`
+  - Purpose: OpenCode automation for AI-assisted development
   - Action: Create using `workflow_call` to reference the remote workflow
   - Implementation:
 
     ```yaml
     ---
-    name: Claude Code
+    name: OpenCode
     on:
       issue_comment:
         types: [created, edited]
@@ -140,9 +142,57 @@ exist. Do not skip items just because a file already exists.
         types: [opened]
       pull_request_review:
         types: [submitted]
+      workflow_call:
+        inputs:
+          agent:
+            description: Agent to use.
+            required: false
+            type: string
+          model:
+            description: Model to use for OpenCode
+            required: false
+            type: string
+          issue_number:
+            description: Issue or PR number for workflow_call triggers
+            required: false
+            type: number
+          prompt:
+            description: Custom prompt to override the default prompt
+            required: false
+            type: string
+      workflow_dispatch:
+        inputs:
+          agent:
+            description: Agent to use.
+            required: false
+            type: string
+          model:
+            description: Model to use for OpenCode
+            required: false
+            type: string
+          issue_number:
+            description: Issue or PR number for manual workflow execution
+            required: false
+            type: number
+          prompt:
+            description: Custom prompt to override the default prompt
+            required: false
+            type: string
     jobs:
-      claude:
-        uses: Cogni-AI-OU/.github/.github/workflows/claude.yml@main
+      opencode:
+        uses: Cogni-AI-OU/.github/.github/workflows/opencode.yml@main
+        with:
+          agent: >-
+            ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call')
+            && inputs.agent }}
+          model: >-
+            ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call')
+            && inputs.model }}
+          prompt: >-
+            ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call')
+            && inputs.prompt }}
+          issue_number: >-
+            ${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number }}
         permissions:
           actions: read
           contents: write
@@ -152,25 +202,44 @@ exist. Do not skip items just because a file already exists.
         secrets: inherit
     ```
 
-  - Note: Requires `ANTHROPIC_API_KEY` secret to be set in repository settings
+  - Note: Requires `OPENCODE_API_KEY` secret to be set in repository settings
 
-- [ ] **`.github/workflows/claude-review.yml`**
+- [ ] **`.github/workflows/opencode-review.yml`**
   - Check if file exists
-  - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/workflows/claude-review.yml`
-  - Purpose: Automated PR review using Claude
+  - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/workflows/opencode-review.yml`
+  - Purpose: Automated PR review using OpenCode
   - Action: Create using `workflow_call` to reference the remote workflow
   - Implementation:
 
     ```yaml
     ---
-    name: Claude Code Review
+    name: OpenCode Review
     on:
+      issue_comment:
+        types: [created]
+      pull_request_review_comment:
+        types: [created]
       pull_request:
         types: [edited, opened, ready_for_review, reopened, review_requested]
+      pull_request_target:
+        types: [edited, opened, ready_for_review, reopened, review_requested]
       workflow_call:
+        inputs:
+          pr_number:
+            description: Pull request number for workflow_call triggers
+            required: true
+            type: number
+      workflow_dispatch:
+        inputs:
+          pr_number:
+            description: Pull request number for manual workflow execution
+            required: true
+            type: number
     jobs:
-      claude-review:
-        uses: Cogni-AI-OU/.github/.github/workflows/claude-review.yml@main
+      opencode-review:
+        uses: Cogni-AI-OU/.github/.github/workflows/opencode-review.yml@main
+        with:
+          pr_number: ${{ github.event.pull_request.number || github.event.issue.number || inputs.pr_number }}
         permissions:
           actions: read
           contents: write
@@ -180,7 +249,8 @@ exist. Do not skip items just because a file already exists.
         secrets: inherit
     ```
 
-  - Note: Requires `ANTHROPIC_API_KEY` secret to be set in repository settings
+  - Note: Requires `OPENCODE_API_KEY` secret to be set in repository settings. For fork PRs, ensure
+    `OPENCODE_API_KEY` is available (e.g., via `pull_request_target`).
 
 - [ ] **`.github/workflows/devcontainer-ci.yml`**
   - Check if file exists (only if `.devcontainer/` directory exists)
@@ -237,11 +307,11 @@ exist. Do not skip items just because a file already exists.
   - Purpose: GitHub Actions problem matcher for pre-commit output
   - Action: Copy from reference if missing
 
-- [ ] **`.github/README.md`**
+- [ ] **`.github/GITHUB-WORKFLOWS.md`**
   - Check if file exists
-  - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/README.template.md`
+  - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/GITHUB-WORKFLOWS.md`
   - Purpose: Documentation for GitHub workflows, agents, and problem matchers
-  - Action: Copy from reference (README.template.md) as `.github/README.md` if missing;
+  - Action: Copy from reference as `.github/GITHUB-WORKFLOWS.md` if missing;
     customize for repository-specific workflows
   - Content: Workflow templates overview, agent prompts usage, problem matchers configuration, security notes
   - Customize: Update workflow references and add repository-specific workflow documentation
@@ -257,16 +327,17 @@ exist. Do not skip items just because a file already exists.
 - [ ] **`.github/workflows/AGENTS.md`**
   - Check if file exists
   - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/workflows/AGENTS.md`
-  - Purpose: Agent catalog describing workflows, triggers, and inputs
+  - Purpose: Agent instruction file describing workflows, triggers, and inputs
   - Action: Create if missing; update when workflows are added, removed, or renamed
 
 - [ ] **`.github/prompts/` directory**
   - Check if directory exists with prompt files
   - Reference: `https://github.com/Cogni-AI-OU/.github/tree/main/.github/prompts`
-  - Purpose: Prompt templates for GitHub Models, Claude, and Copilot
+  - Purpose: Prompt templates for GitHub Models, OpenCode, and Copilot
   - Action: Include relevant prompt files; keep formats (Markdown/YAML) as upstream
   - Available prompts:
     - `default.prompt.yml` - Default prompt for agent-ai workflow
+    - `pr-review.prompt.md` - PR review prompt
     - `repository-setup.prompt.md` - This setup prompt
     - `test.prompt.yml` - Example prompt
   - Customize: Add prompts for repository-specific tasks as needed
@@ -274,7 +345,7 @@ exist. Do not skip items just because a file already exists.
 - [ ] **`.github/prompts/AGENTS.md`**
   - Check if file exists
   - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/prompts/AGENTS.md`
-  - Purpose: Catalog of prompts with format and intended use for agents
+  - Purpose: Agent instruction file describing workflows, triggers, and inputs
   - Action: Create if missing; update when prompts change
 
 ### Phase 4: Development Container Configuration
@@ -382,14 +453,6 @@ exist. Do not skip items just because a file already exists.
   - Content: Quick start, links to instructions, common tasks (linting, building, testing)
   - Customize: Include repository-specific commands, test runners, build processes
 
-- [ ] **`CLAUDE.md`**
-  - Check if file exists
-  - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/CLAUDE.md`
-  - Purpose: Claude Code-specific guidance and configuration
-  - Action: Create if missing
-  - Content: Triggering info, allowed tools, model selection, MCP config
-  - Customize: Adjust allowed tools and MCP servers for repository needs
-
 - [ ] **`.gemini/settings.json`**
   - Check if `.gemini/` directory and file exist
   - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.gemini/settings.json`
@@ -407,56 +470,24 @@ exist. Do not skip items just because a file already exists.
   - Content: Project overview, coding standards, formatting guidelines, troubleshooting
   - Customize: Add repository-specific standards, dependencies, build/test commands
 
-- [ ] **`.github/instructions/` directory**
-  - Check if directory exists with language-specific instruction files
-  - Reference: `https://github.com/Cogni-AI-OU/.github/tree/main/.github/instructions`
-  - Purpose: Detailed formatting and content rules for different file types
-  - Action: Copy relevant instruction files based on languages used in repository
-  - Available files:
-    - `README.md` - Overview of instructions
-    - `ansible.instructions.md` - Ansible conventions
-    - `blog.instructions.md` - Blog post standards (if applicable)
-    - `json.instructions.md` - JSON formatting
-    - `markdown.instructions.md` - Markdown standards
-    - `readme.instructions.md` - README guidelines
-    - `yaml.instructions.md` - YAML formatting
-  - Customize: Only include files relevant to languages/formats used in repository
-
-- [ ] **`.github/instructions/AGENTS.md`**
+- [ ] **`.github/mcp-config.json`**
   - Check if file exists
-  - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/instructions/AGENTS.md`
-  - Purpose: Catalog of instruction files with scopes for agents
-  - Action: Create if missing and keep in sync when instruction files change
+  - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/mcp-config.json`
+  - Purpose: MCP server configuration for GitHub Copilot
+  - Action: Create or update to org baseline
+  - Update flow: Detect existing file and replace or merge with canonical org baseline
+    content. Write standardized/configured content when absent or differs, flagging or
+    auto-committing as appropriate.
+  - Content: Configuration that provides access to built-in GitHub tools
 
-- [ ] **`.github/agents/` directory**
-  - Check if directory exists with custom agent files
-  - Reference: `https://github.com/Cogni-AI-OU/.github/tree/main/.github/agents`
-  - Purpose: Custom agent definitions for specialized tasks
-  - Action: Copy relevant agent files based on repository needs
-  - Required agents:
-    - `code-tour.agent.md` - For creating/updating `.tours/` files (always include)
-    - `FIREWALL.md` - Firewall allowlist for Copilot agents (always include)
-    - `README.md` - Documentation of available agents
-  - Optional agents:
-    - `copilot-plus.agent.md` - Enhanced Copilot with critical thinking
-  - Customize: Add repository-specific agents as needed
-
-- [ ] **`.github/skills/` directory**
-  - Check if directory exists with skill files
-  - Reference: `https://github.com/Cogni-AI-OU/.github/tree/main/.github/skills`
-  - Purpose: Agent Skills for GitHub Copilot coding agent
-  - Action: Create directory with README.md; optionally copy skill subdirectories
-  - Required files:
-    - `README.md` - Overview of agent skills and how to use them
-    - `context-aware-ops/` - Intelligent resource management
-    - `git/` - Guide for safe git operations
-    - `github-actions/` - Debugging failing workflows
-    - `pre-commit/` - Using pre-commit hooks effectively
-    - `robust-commands/` - Resilient command execution
-    - `skill-writer/` - Generate/update SKILL.md files
-  - Optional skills (copy as needed):
-    - Check remote
-  - Customize: Add repository-specific skills as needed
+- [ ] **`.github/AGENTS.md`**
+  - Check if file exists
+  - Reference: `https://github.com/Cogni-AI-OU/.github/blob/main/.github/AGENTS.md`
+  - Purpose: Entry point for agent work in the `.github` directory
+  - Action: Create or update to org baseline
+  - Update flow: Detect existing file and replace or merge with canonical org baseline
+    content. Write standardized/configured content when absent or differs, flagging or
+    auto-committing as appropriate.
 
 ### Phase 8: Additional Organization Files
 
@@ -495,7 +526,7 @@ exist. Do not skip items just because a file already exists.
 - [ ] **Update or create repository documentation**
   - Ensure README.md documents new configuration files
   - Add section about pre-commit hooks and how to use them
-  - Document any required secrets (e.g., `ANTHROPIC_API_KEY`)
+  - Document any required secrets (e.g., `OPENCODE_API_KEY`)
   - Add badge to README for build status
 
 - [ ] **Create summary report**
@@ -553,7 +584,7 @@ When customizing:
 
 Some workflows require secrets to be configured in repository settings:
 
-- `ANTHROPIC_API_KEY` - Required for Claude Code workflows
+- `OPENCODE_API_KEY` - Required for OpenCode workflows
 - Add others as needed for specific integrations
 
 Document required secrets in README.md or a SECRETS.md file.

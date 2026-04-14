@@ -82,6 +82,20 @@ To test using Molecule, run:
 molecule test
 ```
 
+Mode reference:
+
+- Install mode (`vastai_host_install_mode`): `local`, `remote`, `native`
+- Script run mode (`vastai_host_install_script_run_mode`, only with `local`/`remote`): `standalone`, `daemon`
+- Molecule scenarios are separate test names, e.g. `local-daemon`, `standalone`, `native-placeholder`
+
+User-facing logic:
+
+- `local`: use the installer script bundled in this role (`files/vast.ai/vast_host_installer.py`).
+- `remote`: download and use installer script from `vastai_host_install_location`.
+- `native`: use Ansible-native tasks (script-by-script deployment flow) instead of running the installer script directly.
+- `standalone` (script run mode): installer config for non-daemon style execution.
+- `daemon` (script run mode): installer config for daemon-style execution.
+
 ## Development
 
 ### Setup
@@ -117,7 +131,6 @@ This repository provides AI agent configurations for automated development.
 | File/Directory | Audience | Purpose |
 | -------------- | -------- | ------- |
 | [AGENTS.md](AGENTS.md) | All agents | Repository-specific guidance and workflows |
-| [CLAUDE.md](CLAUDE.md) | Claude | Claude-specific configuration |
 | [.github/copilot-instructions.md](.github/copilot-instructions.md) | Copilot | Coding standards and project context |
 | [.github/agents/](.github/agents/) | Orchestrators | Specialized agent configs for specific tasks |
 | [.github/skills/](.github/skills/) | All agents | Reusable capabilities (git, GitHub Actions, etc.) |

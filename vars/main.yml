@@ -9,3 +9,7 @@ vastai_host_become_method:
   OtherLinux: ansible.builtin.su
   Ubuntu: ansible.builtin.su
   Windows: ansible.builtin.runas
+vastai_host_config_template_group: nogroup
+vastai_host_config_template_user: vastai_kaalia
+vastai_host_preflight_validate_api_key: true
+vastai_host_preflight_identify_endpoint: https://console.vast.ai/api/v0/daemon/identify/

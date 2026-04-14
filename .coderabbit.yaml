@@ -1,0 +1,41 @@
+---
+# CodeRabbit configuration
+chat:
+  auto_reply: true
+early_access: true
+reviews:
+  path_instructions:
+    - path: "files/vast.ai/**"
+      instructions: >
+        These files are synced from upstream remote sources (Vast.ai) and must
+        not be modified locally. Do not perform syntax checks, linting, or
+        suggest any code changes for files matching this path. Treat them as
+        read-only vendored content.
+  auto_review:
+    base_branches:
+      - "dev*"
+      - "main"
+      - "master"
+    drafts: false
+    enabled: true
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+  high_level_summary: true
+  poem: true
+  request_changes_workflow: false
+  review_status: true
+  tools:
+    actionlint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    hadolint:
+      enabled: true
+    markdownlint:
+      enabled: true
+    shellcheck:
+      enabled: true
+    yamllint:
+      enabled: true
+version: 1

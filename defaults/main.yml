@@ -1,17 +1,46 @@
 ---
-vastai_host_account_identity: ''
+vastai_host_account_identity: >-
+  {{
+    lookup("ansible.builtin.env", "VAST_API_KEY")
+    | default("", true)
+  }}
 vastai_host_install_execute: true
 vastai_host_install_extra_args:
-  - --no-driver
-  - --no-libvirt
-vastai_host_install_location: files/vast.ai/install.py
+  - --no-driver  # Assume nvidia driver is installed.
+vastai_host_install_location: files/vast.ai/vast_host_installer.py
 vastai_host_install_mode: local
+vastai_host_config_ipaddr: ''
+vastai_host_config_port_range: 11000-11999
+vastai_host_config_vast_server: https://elb-internal-nocache.vast.ai
+vastai_host_config_environment_vast_server: https://elb-internal-nocache.vast.ai
 vastai_host_install_python: python3
-vastai_host_install_script_destination: /usr/local/src/vastai-install.py
-vastai_host_install_script_run_mode: standalone
+vastai_host_install_script_destination: /var/lib/vastai_kaalia/vast_host_installer.py
+vastai_host_install_script_run_mode: daemon
+vastai_host_install_start_daemon: true
+vastai_host_install_unhold_packages_before_run: true
+vastai_host_install_unhold_package_list:
+  - cloud-utils
+  - containerd.io
+  - docker-ce
+  - docker-ce-cli
+  - docker-ce-rootless-extras
+  - libvirt-daemon-system
+  - libvirt-dev
+  - nvidia-docker2
+  - qemu-system-x86
+  - xfsprogs
+vastai_host_install_prerequisite_packages:
+  - openssh-server
+  - logrotate
+  - libvirt-dev
+  - nethogs
+  - bubblewrap
 vastai_host_install_script_run_mode_args:
-  daemon:
-    - --no-docker
+  daemon: []
   standalone:
-    - --no-daemon
+    - --no-daemon  # Don't run vast.ai daemon installer.
 vastai_host_install_validate_certs: true
+vastai_host_manage_cron_jobs: true
+vastai_host_cron_file_path: /var/lib/vastai_kaalia/vastai_kaalia.cron
+vastai_host_manage_non_native_daemon_payload: true
+vastai_host_daemon_archive_url: https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/daemon_299.tar.gz

@@ -1,0 +1,6 @@
+---
+- name: Deploy test_nvml_error.sh
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: test_nvml_error.sh
+    native_script_dest: /var/lib/vastai_kaalia/test_nvml_error.sh

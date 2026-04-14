@@ -19,4 +19,5 @@
           echo "No supported package manager found" >&2
           exit 1
         fi
+      check_mode: false
       changed_when: false

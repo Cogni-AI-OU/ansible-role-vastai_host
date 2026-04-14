@@ -1,0 +1,6 @@
+---
+- name: Deploy update_launcher.sh
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: update_launcher.sh
+    native_script_dest: /var/lib/vastai_kaalia/update_launcher.sh

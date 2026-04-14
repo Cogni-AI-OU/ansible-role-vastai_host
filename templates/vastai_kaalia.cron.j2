@@ -1,0 +1,9 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+46 * * * * /var/lib/vastai_kaalia/update_scripts.sh
+14 * * * * python3 /var/lib/vastai_kaalia/send_mach_info.py >> send_mach_info.log
+9 * * * * wget https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/update_scripts.sh -O /var/lib/vastai_kaalia/update_scripts.sh; chmod +x /var/lib/vastai_kaalia/update_scripts.sh;
+*/5 * * * * python3 /var/lib/vastai_kaalia/read_packs.py
+56 * * * * sudo /var/lib/vastai_kaalia/enable_vms.py on
+19 * * * * /var/lib/vastai_kaalia/sync_libvirt.sh
+5 * * * * sudo python3 /var/lib/vastai_kaalia/purge_stale_cdi.py >> /var/lib/vastai_kaalia/purge_stale_cdi.log 2>&1

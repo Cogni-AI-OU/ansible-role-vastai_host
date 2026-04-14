@@ -1,0 +1,6 @@
+---
+- name: Deploy enable_vms.py
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: enable_vms.py
+    native_script_dest: /var/lib/vastai_kaalia/enable_vms.py

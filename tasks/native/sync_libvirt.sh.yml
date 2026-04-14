@@ -1,0 +1,6 @@
+---
+- name: Deploy sync_libvirt.sh
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: sync_libvirt.sh
+    native_script_dest: /var/lib/vastai_kaalia/sync_libvirt.sh

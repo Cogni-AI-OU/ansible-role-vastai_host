@@ -8,6 +8,9 @@ Re-downloads and replaces all upstream Vast.ai script files listed in
 [files/vast.ai/README.md](../files/vast.ai/README.md) into
 [files/vast.ai](../files/vast.ai/).
 
+This includes `install_update.sh` from the daemons update endpoint used by
+`update_launcher.sh`.
+
 Usage:
 
 ```bash

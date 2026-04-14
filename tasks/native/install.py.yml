@@ -1,0 +1,29 @@
+---
+- name: Ensure docker group exists
+  ansible.builtin.group:
+    name: docker
+    state: present
+- name: Ensure vastai_kaalia user exists
+  ansible.builtin.user:
+    name: vastai_kaalia
+    system: true
+    shell: /bin/bash
+    groups:
+      - docker
+    append: true
+    create_home: false
+    home: /var/lib/vastai_kaalia
+    state: present
+- name: Ensure native data directories exist
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    mode: '0755'
+  loop:
+    - /var/lib/vastai_kaalia
+    - /var/lib/vastai_kaalia/data
+- name: Deploy installer script to role destination path
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: install.py
+    native_script_dest: '{{ vastai_host_install_script_destination }}'

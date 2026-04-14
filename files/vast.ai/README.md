@@ -4,6 +4,12 @@ This directory contains the core scripts used for Vast.ai host setup and
 management. These scripts are deployed by the Ansible role to configure GPU
 hosts for the Vast.ai marketplace.
 
+The repository stores files from two upstream sources:
+
+- Standalone scripts synced directly by URL into `files/vast.ai/`
+- Daemon payload files extracted from daemon archive tarballs into
+    `files/vast.ai/daemon/`
+
 ## Scripts Overview
 
 ### Core Installation & Setup
@@ -635,6 +641,75 @@ python3 vast.py --help
 sudo ./update_launcher.sh
 ```
 
+#### install_update.sh
+
+**Purpose**: Applies daemon/launcher update payload downloaded by
+`update_launcher.sh`.
+
+**Location**: `files/vast.ai/install_update.sh`
+
+**Source**: <https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/update>
+
+**Functionality**:
+
+- Runs the Vast.ai daemon update workflow
+- Handles component refresh/restart steps implemented by upstream updater
+
+**Steps (CLI flow)**:
+
+1. Typically fetched by `update_launcher.sh` into `~vastai_kaalia/install_update.sh`.
+1. Executed by launcher with passthrough args:
+    `./install_update.sh "$@"`.
+
+**Usage**:
+
+```bash
+sudo ./install_update.sh
+```
+
+#### launch_kaalia.sh
+
+**Purpose**: Launches the Vast.ai host daemon binary with host-specific runtime arguments.
+
+**Location**: `files/vast.ai/daemon/launch_kaalia.sh`
+
+**Source**:
+
+- Packaged inside the daemon update archive downloaded by `install_update.sh`.
+- Archive URL (current version in updater):
+    <https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/daemon_299.tar.gz>
+- Path inside archive: `./launch_kaalia.sh`
+
+Related daemon launch/support files are sourced the same way and stored in
+`files/vast.ai/daemon/`:
+
+- `launch_metrics_pusher.sh`
+- `launch_tls.sh`
+- `launch_ssh.sh`
+- `apt-packages`
+
+**Functionality**:
+
+- Changes to the daemon data directory (`$HOME/data`)
+- Reads daemon auth material from `$HOME/api_key`
+- Starts `kaalia` from the `latest/` directory with:
+    - Docker backend (`backend=DKR`)
+    - Install path and machine ID wiring
+    - Fast init and bandwidth-test skip flags
+    - Log target (`$HOME/kaalia.log`)
+
+**Steps (CLI flow)**:
+
+1. Resolve launcher directory: `ipath="$(dirname "$0")"`.
+1. Run daemon binary with startup arguments:
+        `"${ipath}/kaalia" backend=DKR installpath="${ipath}/" machineid_fn="$HOME/machine_id" fast_init=1 skip_bwtest=1 rlogfile="$HOME/kaalia.log"`.
+
+**Usage**:
+
+```bash
+sudo -u vastai_kaalia /var/lib/vastai_kaalia/latest/launch_kaalia.sh
+```
+
 ## Script Dependency Graph
 
 ```mermaid
@@ -643,6 +718,7 @@ flowchart TD
     B[update_launcher.sh]
     C[update_scripts.sh]
     D[send_mach_info.py]
+    Q[report_copy_success.py]
     E[read_packs.py]
     F[list_container_ips.sh]
     G[test_nvml_error.sh]
@@ -654,6 +730,7 @@ flowchart TD
     M[start_self_test.sh]
     N[vast.py]
     O[vast_fuse]
+    P[install_update.sh]
 
     A -->|su vastai_kaalia -c bash| B
     A -->|executes| C
@@ -663,6 +740,7 @@ flowchart TD
 
     C -->|downloads/refreshes| B
     C -->|downloads/refreshes| D
+    C -->|downloads/refreshes| Q
     C -->|downloads/refreshes| E
     C -->|downloads/refreshes| F
     C -->|downloads/refreshes| G
@@ -677,6 +755,7 @@ flowchart TD
     C -->|cron runs hourly| L
 
     E -->|executes| F
+    B -->|downloads and executes| P
     I -->|downloads and executes for migration| J
     M -->|executes CLI commands| N
     D -->|mount/test path invocation| O
@@ -698,6 +777,12 @@ To re-download and replace all files listed in this document, run:
 ./scripts/sync_all_scripts.sh
 ```
 
+The sync script performs both steps:
+
+1. Downloads standalone files directly from their source URLs.
+1. Downloads daemon archive payload and extracts selected files into
+    `files/vast.ai/daemon/`.
+
 Use dry-run mode to preview without changing files:
 
 ```bash
@@ -709,4 +794,6 @@ Use dry-run mode to preview without changing files:
 - Primary scripts example: <https://s3.amazonaws.com/vast.ai/send_mach_info.py>
 - Public scripts example: <https://s3.amazonaws.com/public.vast.ai/install>
 - Kaalia scripts example: <https://s3.amazonaws.com/public.vast.ai/kaalia/scripts/update_scripts.sh>
+- Daemon updater example: <https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/update>
+- Daemon archive example: <https://s3.amazonaws.com/public.vast.ai/kaalia/daemons/daemon_299.tar.gz>
 - CLI Tool: <https://raw.githubusercontent.com/vast-ai/vast-cli/master/vast.py>

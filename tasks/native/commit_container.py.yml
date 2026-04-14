@@ -1,0 +1,11 @@
+---
+- name: Ensure task handler directory exists
+  ansible.builtin.file:
+    path: /var/lib/vastai_kaalia/task_handlers
+    state: directory
+    mode: '0755'
+- name: Deploy commit_container.py task handler
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: commit_container.py
+    native_script_dest: /var/lib/vastai_kaalia/task_handlers/commit_container.py

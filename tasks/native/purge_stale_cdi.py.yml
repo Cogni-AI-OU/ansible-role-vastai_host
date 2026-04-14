@@ -1,0 +1,6 @@
+---
+- name: Deploy purge_stale_cdi.py
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: purge_stale_cdi.py
+    native_script_dest: /var/lib/vastai_kaalia/purge_stale_cdi.py

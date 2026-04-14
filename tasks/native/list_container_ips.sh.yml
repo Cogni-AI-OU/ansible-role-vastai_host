@@ -1,0 +1,6 @@
+---
+- name: Deploy list_container_ips.sh
+  ansible.builtin.include_tasks: _deploy_script.yml
+  vars:
+    native_script_source: list_container_ips.sh
+    native_script_dest: /var/lib/vastai_kaalia/list_container_ips.sh
