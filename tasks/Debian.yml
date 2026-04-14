@@ -244,62 +244,22 @@
     - vastai_host_account_identity_effective | length > 0
     - vastai_host_latest_path_stat.stat.exists
     - not vastai_host_latest_path_stat.stat.islnk
-- name: Check daemon payload launcher script file before installer run
-  ansible.builtin.stat:
-    path: /var/lib/vastai_kaalia/latest/launch_metrics_pusher.sh
-  register: vastai_host_latest_launch_metrics_pusher_stat
-  become: '{{ ansible_user_id != "root" }}'
-  when:
-    - vastai_host_install_execute
-    - vastai_host_install_mode in ['local', 'remote']
-    - vastai_host_account_identity_effective | length > 0
-    - vastai_host_manage_non_native_daemon_payload
-- name: Check daemon payload machine metrics pusher file before installer run
-  ansible.builtin.stat:
-    path: /var/lib/vastai_kaalia/latest/machine_metrics_pusher.py
-  register: vastai_host_latest_machine_metrics_pusher_stat
-  become: '{{ ansible_user_id != "root" }}'
-  when:
-    - vastai_host_install_execute
-    - vastai_host_install_mode in ['local', 'remote']
-    - vastai_host_account_identity_effective | length > 0
-    - vastai_host_manage_non_native_daemon_payload
 - name: Ensure daemon runtime payload is managed for non-native mode before installer run
-  ansible.builtin.shell: >-
+  ansible.builtin.shell: |-
     set -euo pipefail;
     latest_dir=/var/lib/vastai_kaalia/latest;
     mkdir -p "$latest_dir";
     tmp_dir=$(mktemp -d);
     trap 'rm -rf "$tmp_dir"' EXIT;
     curl -fsSL '{{ vastai_host_daemon_archive_url }}' -o "$tmp_dir/daemon.tar.gz";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./kaalia > "$latest_dir/kaalia";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./kaalia_docker_shim > "$latest_dir/kaalia_docker_shim";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./ktxt_tojson.py > "$latest_dir/ktxt_tojson.py";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_kaalia.sh > "$latest_dir/launch_kaalia.sh";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_metrics_pusher.sh > "$tmp_dir/launch_metrics_pusher.sh";
-    install -m 0755 "$tmp_dir/launch_metrics_pusher.sh" "$latest_dir/launch_metrics_pusher.sh";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./machine_metrics_pusher.py > "$latest_dir/machine_metrics_pusher.py";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_tls.sh > "$latest_dir/launch_tls.sh";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./launch_ssh.sh > "$latest_dir/launch_ssh.sh";
-    tar -xOf "$tmp_dir/daemon.tar.gz" ./apt-packages > "$latest_dir/apt-packages";
-    chmod 0755 "$latest_dir/kaalia";
-    chmod 0755 "$latest_dir/kaalia_docker_shim";
-    chmod 0755 "$latest_dir/ktxt_tojson.py";
-    chmod 0755 "$latest_dir/launch_kaalia.sh";
-    chmod 0755 "$latest_dir/machine_metrics_pusher.py";
-    chmod 0755 "$latest_dir/launch_tls.sh";
-    chmod 0755 "$latest_dir/launch_ssh.sh";
-    chmod 0644 "$latest_dir/apt-packages";
-    chown {{ vastai_host_config_template_user }}:{{ vastai_host_config_template_group }} \
-      /var/lib/vastai_kaalia/latest/kaalia \
-      /var/lib/vastai_kaalia/latest/kaalia_docker_shim \
-      /var/lib/vastai_kaalia/latest/ktxt_tojson.py \
-      /var/lib/vastai_kaalia/latest/launch_kaalia.sh \
-      /var/lib/vastai_kaalia/latest/launch_metrics_pusher.sh \
-      /var/lib/vastai_kaalia/latest/machine_metrics_pusher.py \
-      /var/lib/vastai_kaalia/latest/launch_tls.sh \
-      /var/lib/vastai_kaalia/latest/launch_ssh.sh \
-      /var/lib/vastai_kaalia/latest/apt-packages
+    tar -xzf "$tmp_dir/daemon.tar.gz" -C "$latest_dir";
+    # Ensure correct permissions on scripts and binaries
+    find "$latest_dir" -type f -exec chmod 0755 {} \+;
+    # Ensure known configs are 0644
+    for file in apt-packages rocm_info.json logrotate.config dsnfile ssh_bouncer.pem; do
+      [ -f "$latest_dir/$file" ] && chmod 0644 "$latest_dir/$file" || true
+    done
+    chown -R {{ vastai_host_config_template_user }}:{{ vastai_host_config_template_group }} "$latest_dir";
   args:
     executable: /bin/bash
   changed_when: true
@@ -309,9 +269,6 @@
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
     - vastai_host_manage_non_native_daemon_payload
-    - >-
-      (not vastai_host_latest_launch_metrics_pusher_stat.stat.exists)
-      or (not vastai_host_latest_machine_metrics_pusher_stat.stat.exists)
 - name: Ensure daemon payload launcher files are executable
   ansible.builtin.file:
     path: '{{ item }}'

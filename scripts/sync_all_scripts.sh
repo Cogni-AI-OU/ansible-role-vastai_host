@@ -75,6 +75,23 @@ declare -a DAEMON_FILE_MAP=(
   "launch_tls.sh|launch_tls.sh"
   "launch_ssh.sh|launch_ssh.sh"
   "apt-packages|apt-packages"
+  "kaalia_nv_use_check|kaalia_nv_use_check"
+  "kaalia_docker_shim|kaalia_docker_shim"
+  "bandwidthTest|bandwidthTest"
+  "bandwidthTestAMD|bandwidthTestAMD"
+  "deviceQuery|deviceQuery"
+  "onupdate.sh|onupdate.sh"
+  "restart.sh|restart.sh"
+  "swap_gpu.py|swap_gpu.py"
+  "translate_uids.py|translate_uids.py"
+  "rocm_info.json|rocm_info.json"
+  "ssh_bouncer.pem|ssh_bouncer.pem"
+  "ssh-forward|ssh-forward"
+  "vast_support_command.sh|vast_support_command.sh"
+  "logrotate.config|logrotate.config"
+  "dsnfile|dsnfile"
+  "qemu|qemu"
+  "vastai-run-update|vastai-run-update"
 )
 
 echo "Syncing ${#FILE_MAP[@]} files into ${TARGET_DIR}"
@@ -133,13 +150,9 @@ for entry in "${DAEMON_FILE_MAP[@]}"; do
   if [[ -f "${destination_path}" ]]; then
     current_mode="$(stat -c '%a' "${destination_path}")"
   else
-    current_mode="0644"
-    if [[ "${file_name}" == *.sh || \
-      "${file_name}" == "kaalia" || \
-      "${file_name}" == "kaalia_docker_shim" || \
-      "${file_name}" == "ktxt_tojson.py" || \
-      "${file_name}" == "machine_metrics_pusher.py" ]]; then
-      current_mode="0755"
+    current_mode="0755"
+    if [[ "${file_name}" == "apt-packages" || "${file_name}" == "rocm_info.json" || "${file_name}" == "logrotate.config" || "${file_name}" == "dsnfile" || "${file_name}" == "ssh_bouncer.pem" ]]; then
+      current_mode="0644"
     fi
   fi
 
