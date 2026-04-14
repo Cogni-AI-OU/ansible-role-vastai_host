@@ -122,19 +122,11 @@ jobs:
   opencode-review:
     uses: Cogni-AI-OU/.github/.github/workflows/opencode-review.yml@main
     with:
-      additional_prompt: >-
-        ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call')
-        && inputs.additional_prompt }}
-      agent: >-
-        ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call')
-        && inputs.agent }}
-      model: >-
-        ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call')
-        && inputs.model }}
+      additional_prompt: ${{ inputs.additional_prompt || '' }}
+      agent: ${{ inputs.agent || '' }}
+      model: ${{ inputs.model || '' }}
       pr_number: ${{ github.event.pull_request.number || github.event.issue.number || inputs.pr_number }}
-      prompt: >-
-        ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call')
-        && inputs.prompt }}
+      prompt: ${{ inputs.prompt || '' }}
     permissions:
       actions: read
       contents: write

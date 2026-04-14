@@ -110,17 +110,11 @@ jobs:
   opencode:
     uses: Cogni-AI-OU/.github/.github/workflows/opencode.yml@main
     with:
-      agent: >-
-        ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call')
-        && inputs.agent }}
+      agent: ${{ inputs.agent || '' }}
       issue_number: >-
         ${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number }}
-      model: >-
-        ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call')
-        && inputs.model }}
-      prompt: >-
-        ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call')
-        && inputs.prompt }}
+      model: ${{ inputs.model || '' }}
+      prompt: ${{ inputs.prompt || '' }}
     permissions:
       actions: read
       contents: write
