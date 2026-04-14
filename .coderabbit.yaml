@@ -4,6 +4,13 @@ chat:
   auto_reply: true
 early_access: true
 reviews:
+  path_instructions:
+    - path: "files/vast.ai/**"
+      instructions: >
+        These files are synced from upstream remote sources (Vast.ai) and must
+        not be modified locally. Do not perform syntax checks, linting, or
+        suggest any code changes for files matching this path. Treat them as
+        read-only vendored content.
   auto_review:
     base_branches:
       - "dev*"
