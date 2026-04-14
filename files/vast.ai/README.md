@@ -702,8 +702,12 @@ Related daemon launch/support files are sourced the same way and stored in
 
 1. Resolve launcher directory: `ipath="$(dirname "$0")"`.
 1. Run daemon binary with startup arguments:
-   `"${ipath}/kaalia" backend=DKR installpath="${ipath}/" machineid_fn="$HOME/machine_id"`
-   `fast_init=1 skip_bwtest=1 rlogfile="$HOME/kaalia.log"`.
+
+   ```bash
+   "${ipath}/kaalia" backend=DKR installpath="${ipath}/" \
+     machineid_fn="$HOME/machine_id" fast_init=1 skip_bwtest=1 \
+     rlogfile="$HOME/kaalia.log"
+   ```
 
 **Usage**:
 
