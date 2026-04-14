@@ -41,7 +41,7 @@ For a human-readable overview, see [README.md](README.md).
 
 ### opencode-review.yml
 
-- Purpose: automated PR review using OpenCode, including fork PRs via `pull_request_target`.
+- Purpose: Automated PR review using OpenCode, including fork PRs via `pull_request_target`.
 - Reusable: `uses: Cogni-AI-OU/.github/.github/workflows/opencode-review.yml@main`.
 - Inputs: `pr_number` (required for `workflow_call`/`workflow_dispatch`).
 - Requires `OPENCODE_API_KEY` secret.
