@@ -11,21 +11,122 @@ on:
     types: [edited, opened, ready_for_review, reopened, review_requested]
   workflow_call:
     inputs:
+      additional_prompt:
+        default: ''
+        description: Additional instructions for the review prompt
+        required: false
+        type: string
+      agent:
+        default: cogni-ai-architect
+        description: Agent to use.
+        required: false
+        type: string
+      model:
+        default: opencode/gpt-5.3-codex
+        description: Model to use for OpenCode
+        required: false
+        type: string
       pr_number:
         description: Pull request number for workflow_call triggers
         required: true
         type: number
+      prompt:
+        default: pr-review
+        description: Prompt template name from .github/prompts (without extension)
+        required: false
+        type: string
   workflow_dispatch:
     inputs:
+      additional_prompt:
+        default: ''
+        description: Additional instructions for the review prompt
+        required: false
+        type: string
+      agent:
+        default: cogni-ai-architect
+        description: Agent to use.
+        options:
+          - build
+          - cogni-ai-architect
+          - compaction
+          - plan
+          - summary
+          - title
+        required: false
+        type: choice
+      model:
+        default: opencode/gpt-5.3-codex
+        description: Model to use for OpenCode
+        options:
+          - opencode/big-pickle
+          - opencode/claude-3-5-haiku
+          - opencode/claude-haiku-4-5
+          - opencode/claude-opus-4-1
+          - opencode/claude-opus-4-5
+          - opencode/claude-opus-4-6
+          - opencode/claude-sonnet-4
+          - opencode/claude-sonnet-4-5
+          - opencode/claude-sonnet-4-6
+          - opencode/gemini-3.1-pro
+          - opencode/gemini-3-flash
+          - opencode/gemini-3-pro
+          - opencode/glm-4.6
+          - opencode/glm-4.7-free
+          - opencode/glm-5
+          - opencode/glm-5.1
+          - opencode/gpt-5
+          - opencode/gpt-5-codex
+          - opencode/gpt-5-nano
+          - opencode/gpt-5.1
+          - opencode/gpt-5.1-codex
+          - opencode/gpt-5.1-codex-max
+          - opencode/gpt-5.1-codex-mini
+          - opencode/gpt-5.2
+          - opencode/gpt-5.2-codex
+          - opencode/gpt-5.3-codex
+          - opencode/gpt-5.3-codex-spark
+          - opencode/gpt-5.4
+          - opencode/gpt-5.4-mini
+          - opencode/gpt-5.4-nano
+          - opencode/gpt-5.4-pro
+          - opencode/grok-code
+          - opencode/kimi-k2
+          - opencode/kimi-k2-thinking
+          - opencode/kimi-k2.5
+          - opencode/minimax-m2.1-free
+          - opencode/minimax-m2.5
+          - opencode/minimax-m2.5-free
+          - opencode/nemotron-3-super-free
+          - opencode/qwen3-coder
+          - opencode/qwen3.6-plus-free
+          # Grok models (xAI)
+          - xai/grok-4-1-fast-non-reasoning  # Fast responses, 2M context
+          - xai/grok-4-1-fast-reasoning  # Tool-calling + reasoning, 2M context
+          - xai/grok-4.20-0309-non-reasoning  # Flagship, 2M context
+          - xai/grok-4.20-0309-reasoning  # Flagship + reasoning, 2M context
+          - xai/grok-code-fast-1  # Agentic coding + reasoning, 256K context
+        required: false
+        type: choice
       pr_number:
         description: Pull request number for manual workflow execution
         required: true
         type: number
+      prompt:
+        default: pr-review
+        description: Prompt template name from .github/prompts (without extension)
+        options:
+          - pr-review
+        required: false
+        type: choice
 jobs:
   opencode-review:
     uses: Cogni-AI-OU/.github/.github/workflows/opencode-review.yml@main
     with:
+      additional_prompt: ${{ inputs.additional_prompt || '' }}
+      agent: ${{ inputs.agent || '' }}
+      model: ${{ inputs.model || '' }}
       pr_number: ${{ github.event.pull_request.number || github.event.issue.number || inputs.pr_number }}
+      prompt: ${{ inputs.prompt || '' }}
     permissions:
       actions: read
       contents: write
