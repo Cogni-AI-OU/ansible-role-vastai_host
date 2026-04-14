@@ -693,16 +693,17 @@ Related daemon launch/support files are sourced the same way and stored in
 - Changes to the daemon data directory (`$HOME/data`)
 - Reads daemon auth material from `$HOME/api_key`
 - Starts `kaalia` from the `latest/` directory with:
-    - Docker backend (`backend=DKR`)
-    - Install path and machine ID wiring
-    - Fast init and bandwidth-test skip flags
-    - Log target (`$HOME/kaalia.log`)
+  - Docker backend (`backend=DKR`)
+  - Install path and machine ID wiring
+  - Fast init and bandwidth-test skip flags
+  - Log target (`$HOME/kaalia.log`)
 
 **Steps (CLI flow)**:
 
 1. Resolve launcher directory: `ipath="$(dirname "$0")"`.
 1. Run daemon binary with startup arguments:
-        `"${ipath}/kaalia" backend=DKR installpath="${ipath}/" machineid_fn="$HOME/machine_id" fast_init=1 skip_bwtest=1 rlogfile="$HOME/kaalia.log"`.
+   `"${ipath}/kaalia" backend=DKR installpath="${ipath}/" machineid_fn="$HOME/machine_id"`
+   `fast_init=1 skip_bwtest=1 rlogfile="$HOME/kaalia.log"`.
 
 **Usage**:
 

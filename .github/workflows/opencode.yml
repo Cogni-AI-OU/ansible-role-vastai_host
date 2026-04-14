@@ -2,13 +2,19 @@
 name: OpenCode
 on:
   issue_comment:
-    types: [created, edited]
+    types:
+      - created
+      - edited
   issues:
-    types: [opened]
+    types:
+      - opened
   pull_request_review:
-    types: [submitted]
+    types:
+      - submitted
   pull_request_review_comment:
-    types: [created, edited]
+    types:
+      - created
+      - edited
   workflow_call:
     inputs:
       agent:

@@ -5,15 +5,13 @@ These agents are tailored to specific tasks and integrate seamlessly with GitHub
 
 ## Available Agents
 
-### [Copilot Plus](copilot-plus.agent.md)
+### [Cogni AI Architect](cogni-ai-architect.agent.md)
 
-Enhanced agent with critical thinking, robust problem-solving, and context-aware resource management. Features:
+Elite autonomous neurosymbolic architect. Features:
 
-- Automatic file size checking before viewing
-- Smart filtering for long outputs
-- Command installation fallback logic
-- Self-improvement capabilities
-- Never-give-up problem-solving approach
+- Recursive problem decomposition and zero-defect invariants
+- Structural perfection and conceptual integrity
+- Strategic deep-module scaling
 
 ### [Code Tour Expert](code-tour.agent.md)
 

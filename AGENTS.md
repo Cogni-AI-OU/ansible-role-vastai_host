@@ -10,7 +10,7 @@ For general project guidance, see [README.md](README.md).
 - Agent configuration and conventions: [.github/copilot-instructions.md](.github/copilot-instructions.md)
 - Language and format rules: see [.github/instructions/AGENTS.md](.github/instructions/AGENTS.md)
 - Workflow and navigation help: [.tours/getting-started.tour](.tours/getting-started.tour)
-- For enhanced agent capabilities, see [Copilot Plus](.github/agents/copilot-plus.agent.md)
+- For enhanced agent capabilities, see [Cogni AI Architect](.github/agents/cogni-ai-architect.agent.md)
 
 ## Directory-Specific Agent files
 
@@ -104,7 +104,7 @@ Read these Agent files when working in corresponding dirs:
 For specific tasks, use the following specialized agent instructions:
 
 - [Code Tour Agent](.github/agents/code-tour.agent.md) - For creating/updating `.tours/` files
-- [Copilot Plus Agent](.github/agents/copilot-plus.agent.md) - Enhanced Copilot capabilities
+- [Cogni AI Architect](.github/agents/cogni-ai-architect.agent.md) - Elite autonomous architect agent
 
 ## Common Tasks
 
