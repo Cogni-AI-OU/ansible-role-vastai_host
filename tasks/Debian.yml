@@ -256,7 +256,7 @@
     # Ensure correct permissions on scripts and binaries
     find "$latest_dir" -type f -exec chmod 0755 {} \+;
     # Ensure known configs are 0644
-    for file in apt-packages rocm_info.json logrotate.config dsnfile ssh_bouncer.pem; do
+    for file in apt-packages rocm_info.json logrotate.config dsnfile; do
       [ -f "$latest_dir/$file" ] && chmod 0644 "$latest_dir/$file" || true
     done
     chown -R {{ vastai_host_config_template_user }}:{{ vastai_host_config_template_group }} "$latest_dir";
