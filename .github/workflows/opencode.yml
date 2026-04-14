@@ -107,18 +107,30 @@ on:
         required: false
         type: string
 jobs:
-  opencode:
+  opencode-auto:
+    if: ${{ github.event_name != 'workflow_dispatch' && github.event_name != 'workflow_call' }}
     uses: Cogni-AI-OU/.github/.github/workflows/opencode.yml@main
     with:
-      agent: ${{ inputs.agent || '' }}
-      issue_number: >-
-        ${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number }}
-      model: ${{ inputs.model || '' }}
-      prompt: ${{ inputs.prompt || '' }}
+      issue_number: ${{ github.event.issue.number || github.event.pull_request.number }}
     permissions:
       actions: read
       contents: write
       id-token: write
       issues: write
       pull-requests: write
-    secrets: inherit
+    secrets: inherit  # pragma: allowlist secret
+  opencode:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' }}
+    uses: Cogni-AI-OU/.github/.github/workflows/opencode.yml@main
+    with:
+      agent: ${{ inputs.agent }}
+      issue_number: ${{ inputs.issue_number }}
+      model: ${{ inputs.model }}
+      prompt: ${{ inputs.prompt }}
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
+    secrets: inherit  # pragma: allowlist secret
