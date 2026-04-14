@@ -119,18 +119,31 @@ on:
         required: false
         type: choice
 jobs:
-  opencode-review:
+  opencode-review-auto:
+    if: ${{ github.event_name != 'workflow_dispatch' && github.event_name != 'workflow_call' }}
     uses: Cogni-AI-OU/.github/.github/workflows/opencode-review.yml@main
     with:
-      additional_prompt: ${{ inputs.additional_prompt || '' }}
-      agent: ${{ inputs.agent || '' }}
-      model: ${{ inputs.model || '' }}
-      pr_number: ${{ github.event.pull_request.number || github.event.issue.number || inputs.pr_number }}
-      prompt: ${{ inputs.prompt || '' }}
+      pr_number: ${{ github.event.pull_request.number || github.event.issue.number }}
     permissions:
       actions: read
       contents: write
       id-token: write
       issues: write
       pull-requests: write
-    secrets: inherit
+    secrets: inherit  # pragma: allowlist secret
+  opencode-review:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' }}
+    uses: Cogni-AI-OU/.github/.github/workflows/opencode-review.yml@main
+    with:
+      additional_prompt: ${{ inputs.additional_prompt }}
+      agent: ${{ inputs.agent }}
+      model: ${{ inputs.model }}
+      pr_number: ${{ inputs.pr_number }}
+      prompt: ${{ inputs.prompt }}
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
+    secrets: inherit  # pragma: allowlist secret
