@@ -1,0 +1,35 @@
+---
+name: OpenCode Review
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [edited, opened, ready_for_review, reopened, review_requested]
+  pull_request_review_comment:
+    types: [created]
+  pull_request_target:
+    types: [edited, opened, ready_for_review, reopened, review_requested]
+  workflow_call:
+    inputs:
+      pr_number:
+        description: Pull request number for workflow_call triggers
+        required: true
+        type: number
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number for manual workflow execution
+        required: true
+        type: number
+jobs:
+  opencode-review:
+    uses: Cogni-AI-OU/.github/.github/workflows/opencode-review.yml@main
+    with:
+      pr_number: ${{ github.event.pull_request.number || github.event.issue.number || inputs.pr_number }}
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
+    secrets: inherit
