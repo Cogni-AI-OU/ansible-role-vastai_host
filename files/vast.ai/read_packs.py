@@ -84,12 +84,13 @@ print(dict(gbwd))
 print(dict(lbwu))
 print(dict(lbwd))
 
+cont_pack_data_file = '/var/lib/vastai_kaalia/cont_pack_data.json'
 cont_pack_data = defaultdict(int)
 cont_pack_data_old = {}
 
 try:
-    if os.path.exists('cont_pack_data.json'):
-        with open('cont_pack_data.json') as json_file:
+    if os.path.exists(cont_pack_data_file):
+        with open(cont_pack_data_file) as json_file:
             cont_pack_data_old = json.load(json_file)
 except Exception as ex:
     print(ex)
@@ -117,7 +118,7 @@ for k,v in container_ip.items():
 print("new:")
 print(dict(cont_pack_data))
 
-with open('cont_pack_data.json', 'w') as fp:
+with open(cont_pack_data_file, 'w') as fp:
     json.dump(dict(cont_pack_data), fp)
 
 
