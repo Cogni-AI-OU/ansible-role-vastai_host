@@ -85,7 +85,6 @@ declare -a DAEMON_FILE_MAP=(
   "swap_gpu.py|swap_gpu.py"
   "translate_uids.py|translate_uids.py"
   "rocm_info.json|rocm_info.json"
-  "ssh_bouncer.pem|ssh_bouncer.pem"
   "ssh-forward|ssh-forward"
   "vast_support_command.sh|vast_support_command.sh"
   "logrotate.config|logrotate.config"
@@ -151,7 +150,7 @@ for entry in "${DAEMON_FILE_MAP[@]}"; do
     current_mode="$(stat -c '%a' "${destination_path}")"
   else
     current_mode="0755"
-    if [[ "${file_name}" == "apt-packages" || "${file_name}" == "rocm_info.json" || "${file_name}" == "logrotate.config" || "${file_name}" == "dsnfile" || "${file_name}" == "ssh_bouncer.pem" ]]; then
+    if [[ "${file_name}" == "apt-packages" || "${file_name}" == "rocm_info.json" || "${file_name}" == "logrotate.config" || "${file_name}" == "dsnfile" ]]; then
       current_mode="0644"
     fi
   fi
