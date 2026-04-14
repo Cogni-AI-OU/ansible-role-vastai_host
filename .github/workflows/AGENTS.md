@@ -11,6 +11,8 @@ For a human-readable overview, see [README.md](README.md).
 | -------- | ------- | -------------------- |
 | [check.yml](check.yml) | Linting and quality gates via actionlint and pre-commit | push, pull_request, schedule; reusable via `workflow_call` |
 | [devcontainer-ci.yml](devcontainer-ci.yml) | Build/test devcontainer and required tools/packages | push/pull_request touching .devcontainer or workflow; schedule; `workflow_call` |
+| [opencode.yml](opencode.yml) | AI-assisted development via OpenCode | issue_comment, issues, pull_request_review, pull_request_review_comment; `workflow_call`; `workflow_dispatch` |
+| [opencode-review.yml](opencode-review.yml) | Automated PR review using OpenCode | issue_comment, pull_request, pull_request_target, pull_request_review_comment; `workflow_call`; `workflow_dispatch` |
 
 ## Details
 
@@ -29,6 +31,20 @@ For a human-readable overview, see [README.md](README.md).
   `workflow_call`.
 - Permissions: callers must grant `packages: write` when pushing images to GHCR.
 - Reusable: `uses: Cogni-AI-OU/.github/.github/workflows/devcontainer-ci.yml@main`.
+
+### opencode.yml
+
+- Purpose: AI-assisted development automation triggered by issues, comments, and PR reviews.
+- Reusable: `uses: Cogni-AI-OU/.github/.github/workflows/opencode.yml@main`.
+- Inputs: `agent`, `model`, `issue_number`, `prompt` (all optional).
+- Requires `OPENCODE_API_KEY` secret.
+
+### opencode-review.yml
+
+- Purpose: automated PR review using OpenCode, including fork PRs via `pull_request_target`.
+- Reusable: `uses: Cogni-AI-OU/.github/.github/workflows/opencode-review.yml@main`.
+- Inputs: `pr_number` (required for `workflow_call`/`workflow_dispatch`).
+- Requires `OPENCODE_API_KEY` secret.
 
 ## Notes
 
