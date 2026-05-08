@@ -12,5 +12,5 @@ https://example.com
 https://github.com/org/repo
 
 # URLs that are blocked for automated requests
-# please maintain at .github/agents/FIREWALL.md
+# please maintain at .github/FIREWALL.md
 # otherwise don't add potential valid links here.

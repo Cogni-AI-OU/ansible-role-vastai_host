@@ -214,7 +214,7 @@ If you encounter firewall issues when using the GitHub Copilot Agent:
 
 - Refer to <https://gh.io/copilot/firewall-config> for configuration details.
 - If you need to allowlist additional hosts, update your firewall configuration accordingly
-  and keep the list of allowed hosts in `.github/agents/FIREWALL.md` up to date.
+  and keep the list of allowed hosts in `.github/FIREWALL.md` up to date.
 
 ### Linting issues
 
