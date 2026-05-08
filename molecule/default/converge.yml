@@ -4,6 +4,10 @@
   hosts: all
   gather_facts: true  # Disable if your role does not rely on facts
   tasks:
+    - name: Set identity for testing
+      ansible.builtin.set_fact:
+        vastai_host_account_identity: ""
+        vastai_host_install_execute: false
     - name: Include main role
       ansible.builtin.include_role:
         name: cogni-ai.vastai_host

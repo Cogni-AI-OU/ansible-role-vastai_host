@@ -35,7 +35,7 @@
     path: '{{ vastai_host_install_script_destination | ansible.builtin.dirname }}'
     state: directory
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -44,7 +44,7 @@
     src: '{{ vastai_host_install_location | regex_replace("^files/", "") }}'
     dest: '{{ vastai_host_install_script_destination }}'
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'local'
@@ -52,7 +52,7 @@
   ansible.builtin.group:
     name: docker
     state: present
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -68,7 +68,7 @@
     create_home: false
     home: /var/lib/vastai_kaalia
     state: present
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -78,7 +78,7 @@
     path: /var/lib/vastai_kaalia
     state: directory
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -88,7 +88,7 @@
     path: /var/lib/vastai_kaalia/data
     state: directory
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -99,7 +99,7 @@
     dest: '{{ vastai_host_install_script_destination }}'
     mode: '0755'
     validate_certs: '{{ vastai_host_install_validate_certs }}'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'remote'
@@ -111,7 +111,7 @@
     create_home: false
     home: /var/lib/vastai_kaalia
     state: present
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -123,7 +123,7 @@
     mode: '0644'
     owner: '{{ vastai_host_config_template_user }}'
     group: '{{ vastai_host_config_template_group }}'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -135,7 +135,7 @@
     mode: '0644'
     owner: '{{ vastai_host_config_template_user }}'
     group: '{{ vastai_host_config_template_group }}'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -148,7 +148,7 @@
     mode: '0644'
     owner: '{{ vastai_host_config_template_user }}'
     group: '{{ vastai_host_config_template_group }}'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -160,7 +160,7 @@
     mode: '0644'
     owner: '{{ vastai_host_config_template_user }}'
     group: '{{ vastai_host_config_template_group }}'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -169,7 +169,7 @@
   ansible.builtin.command:
     cmd: >-
       apt-mark unhold {{ vastai_host_install_unhold_package_list | join(' ') }}
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   register: vastai_host_install_unhold_result
   changed_when: "'Canceled hold on' in vastai_host_install_unhold_result.stdout"
   when:
@@ -183,7 +183,7 @@
     name: '{{ vastai_host_install_prerequisite_packages }}'
     state: present
     update_cache: true
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -228,7 +228,7 @@
     path: /var/lib/vastai_kaalia/latest
     follow: false
   register: vastai_host_latest_path_stat
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -237,7 +237,7 @@
   ansible.builtin.file:
     path: /var/lib/vastai_kaalia/latest
     state: absent
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -263,7 +263,7 @@
   args:
     executable: /bin/bash
   changed_when: true
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -280,14 +280,14 @@
     - /var/lib/vastai_kaalia/latest/launch_kaalia.sh
     - /var/lib/vastai_kaalia/latest/launch_metrics_pusher.sh
     - /var/lib/vastai_kaalia/latest/machine_metrics_pusher.py
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
     - vastai_host_install_script_run_mode == 'daemon'
 - name: Run install script
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -353,7 +353,7 @@
     mode: '0644'
     owner: root
     group: root
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -365,7 +365,7 @@
     mode: '0644'
     owner: root
     group: root
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -377,7 +377,7 @@
     daemon_reload: true
     enabled: true
     state: started
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - not ansible_check_mode
     - vastai_host_install_execute
@@ -390,7 +390,7 @@
     daemon_reload: true
     enabled: true
     state: started
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - not ansible_check_mode
     - vastai_host_install_execute
@@ -406,7 +406,7 @@
     owner: '{{ vastai_host_config_template_user }}'
     group: '{{ vastai_host_config_template_group }}'
   register: vastai_host_cron_template_result
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -416,7 +416,7 @@
   ansible.builtin.command:
     cmd: crontab -u vastai_kaalia {{ vastai_host_cron_file_path }}
   changed_when: vastai_host_cron_template_result.changed
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -427,7 +427,7 @@
     content: completed\n
     dest: /var/lib/vastai_kaalia/.ansible_vastai_install_done
     mode: '0644'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -447,7 +447,7 @@
     path: /var/lib/vastai_kaalia
     state: directory
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
@@ -456,7 +456,7 @@
     path: /var/lib/vastai_kaalia/data
     state: directory
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
@@ -476,7 +476,7 @@
     mode: '0700'
     owner: vastai_kaalia
     group: nogroup
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - >-
@@ -493,7 +493,7 @@
     mode: '0600'
     owner: vastai_kaalia
     group: nogroup
-  become: '{{ ansible_user_id != "root" }}'
+  become: '{{ ansible_facts["user_id"] != "root" }}'
   when:
     - vastai_host_install_execute
     - >-

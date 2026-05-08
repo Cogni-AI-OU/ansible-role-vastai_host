@@ -12,6 +12,10 @@ For general project guidance, see [README.md](README.md).
 - Workflow and navigation help: [.tours/getting-started.tour](.tours/getting-started.tour)
 - For enhanced agent capabilities, see [Copilot Plus](.github/agents/copilot-plus.agent.md)
 
+## Project Evolution
+
+- **Kaalia**: Note that 'Kaalia' was the internal codename for the Vast.ai host management system. Most system paths still use `vastai_kaalia`.
+
 ## Directory-Specific Agent files
 
 Read these Agent files when working in corresponding dirs:
