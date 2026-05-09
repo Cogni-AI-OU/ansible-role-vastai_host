@@ -61,7 +61,7 @@
     group: '{{ vastai_host_config_template_group }}'
     groups: docker
     system: true
-    shell: /usr/sbin/nologin
+    shell: /bin/bash
     create_home: false
     home: /var/lib/vastai_kaalia
     state: present
@@ -96,18 +96,6 @@
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'remote'
-- name: Ensure vastai_kaalia user exists before config file deployment
-  ansible.builtin.user:
-    name: '{{ vastai_host_config_template_user }}'
-    system: true
-    shell: /bin/bash
-    create_home: false
-    home: /var/lib/vastai_kaalia
-    state: present
-  when:
-    - vastai_host_install_execute
-    - vastai_host_install_mode in ['local', 'remote']
-    - vastai_host_account_identity_effective | length > 0
 - name: Deploy host port range file
   ansible.builtin.template:
     src: host_port_range.j2
@@ -154,9 +142,12 @@
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
 - name: Unhold apt packages before installer run
-  ansible.builtin.command:
-    cmd: >-
-      apt-mark unhold {{ vastai_host_install_unhold_package_list | join(' ') }}
+  ansible.builtin.shell: >-
+    for pkg in {{ vastai_host_install_unhold_package_list | join(' ') }}; do
+      if dpkg -s "$pkg" >/dev/null 2>&1; then
+        apt-mark unhold "$pkg"
+      fi
+    done
   register: vastai_host_install_unhold_result
   changed_when: "'Canceled hold on' in vastai_host_install_unhold_result.stdout"
   when:
@@ -243,9 +234,9 @@
     trap 'rm -rf "$tmp_dir"' EXIT;
     curl -fsSL '{{ vastai_host_daemon_archive_url }}' -o "$tmp_dir/daemon.tar.gz";
     tar -xzf "$tmp_dir/daemon.tar.gz" -C "$latest_dir";
-    # Ensure correct permissions on scripts and binaries
+                # Ensure correct permissions on scripts and binaries
     find "$latest_dir" -type f -exec chmod 0755 {} \+;
-    # Ensure known configs are 0644
+                # Ensure known configs are 0644
     for file in apt-packages rocm_info.json logrotate.config dsnfile; do
       [ -f "$latest_dir/$file" ] && chmod 0644 "$latest_dir/$file" || true
     done

@@ -8,21 +8,20 @@ For general project guidance, see [README.md](README.md).
 
 - Project overview and install steps: [README.md](README.md)
 - Agent configuration and conventions: [.github/copilot-instructions.md](.github/copilot-instructions.md)
-- Language and format rules: see [.github/instructions/AGENTS.md](.github/instructions/AGENTS.md)
+- Language and format rules: see organization standards
 - Workflow and navigation help: [.tours/getting-started.tour](.tours/getting-started.tour)
-- For enhanced agent capabilities, see [Copilot Plus](.github/agents/copilot-plus.agent.md)
+- For enhanced agent capabilities, see Copilot Plus
 
 ## Project Evolution
 
-- **Kaalia**: Note that 'Kaalia' was the internal codename for the Vast.ai host management system. Most system paths still use `vastai_kaalia`.
+- **Kaalia**: Note that 'Kaalia' was the internal codename for the Vast.ai host management system.
+  Most system paths still use `vastai_kaalia`.
 
 ## Directory-Specific Agent files
 
 Read these Agent files when working in corresponding dirs:
 
 - [`.github/`](.github/AGENTS.md)
-- [`.github/instructions/`](.github/instructions/AGENTS.md)
-- [`.github/skills/`](.github/skills/AGENTS.md)
 - [`.github/workflows/`](.github/workflows/AGENTS.md)
 - [`.github/prompts/`](.github/prompts/AGENTS.md)
 - [`files/vast.ai/`](files/vast.ai/AGENTS.md)
@@ -105,10 +104,7 @@ Read these Agent files when working in corresponding dirs:
 
 ### Specialized Agents
 
-For specific tasks, use the following specialized agent instructions:
-
-- [Code Tour Agent](.github/agents/code-tour.agent.md) - For creating/updating `.tours/` files
-- [Copilot Plus Agent](.github/agents/copilot-plus.agent.md) - Enhanced Copilot capabilities
+For specific tasks, use specialized agent instructions (if available).
 
 ## Common Tasks
 
@@ -163,8 +159,8 @@ on top of the updated target branch:
 4. Cherry-pick your feature commits
 5. Verify only your changes remain
 
-**For detailed step-by-step instructions with commands**, see:
-[`.github/skills/git/SKILL.md`](.github/skills/git/SKILL.md)
+**For detailed step-by-step instructions**, see:
+the organization's Git skills.
 
 ### Key Points
 
@@ -197,7 +193,7 @@ tries to auto-rebase (e.g., 113 commits), it encounters conflicts it cannot reso
 **Error Patterns:** `Rebasing (1/XXX)` with large numbers, `CONFLICT (content)`, session crash with `GitError`
 
 **For complete details**, see:
-[`.github/skills/git/SKILL.md` - "Working with Automation Tools"](.github/skills/git/SKILL.md#working-with-automation-tools)
+the organization's Git automation tools documentation.
 
 ## References
 
