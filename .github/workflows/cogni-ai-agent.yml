@@ -146,12 +146,22 @@ jobs:
               touch*: allow
               true*: allow
               vim*: allow
-          prompt: ${{ github.event.comment.body || github.event.discussion.body || github.event.issue.body || github.event.pull_request.body || inputs.prompt }}
+          prompt: >-
+            ${{ github.event.comment.body
+            || github.event.discussion.body
+            || github.event.issue.body
+            || github.event.pull_request.body
+            || inputs.prompt }}
       - name: Annotate Cogni AI Agent prompt and output
         if: always()
         env:
           AGENT_OUTPUT: ${{ steps.agent.outputs.response }}
-          AGENT_PROMPT: ${{ github.event.comment.body || github.event.discussion.body || github.event.issue.body || github.event.pull_request.body || inputs.prompt }}
+          AGENT_PROMPT: >-
+            ${{ github.event.comment.body
+            || github.event.discussion.body
+            || github.event.issue.body
+            || github.event.pull_request.body
+            || inputs.prompt }}
         run: |
           set -euo pipefail
           escape() {
