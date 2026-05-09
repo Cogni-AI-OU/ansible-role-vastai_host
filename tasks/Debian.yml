@@ -35,7 +35,6 @@
     path: '{{ vastai_host_install_script_destination | ansible.builtin.dirname }}'
     state: directory
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -44,7 +43,6 @@
     src: '{{ vastai_host_install_location | regex_replace("^files/", "") }}'
     dest: '{{ vastai_host_install_script_destination }}'
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'local'
@@ -52,7 +50,6 @@
   ansible.builtin.group:
     name: docker
     state: present
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -64,11 +61,10 @@
     group: '{{ vastai_host_config_template_group }}'
     groups: docker
     system: true
-    shell: /usr/sbin/nologin
+    shell: /bin/bash
     create_home: false
     home: /var/lib/vastai_kaalia
     state: present
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -78,7 +74,6 @@
     path: /var/lib/vastai_kaalia
     state: directory
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -88,7 +83,6 @@
     path: /var/lib/vastai_kaalia/data
     state: directory
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -99,23 +93,9 @@
     dest: '{{ vastai_host_install_script_destination }}'
     mode: '0755'
     validate_certs: '{{ vastai_host_install_validate_certs }}'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'remote'
-- name: Ensure vastai_kaalia user exists before config file deployment
-  ansible.builtin.user:
-    name: '{{ vastai_host_config_template_user }}'
-    system: true
-    shell: /bin/bash
-    create_home: false
-    home: /var/lib/vastai_kaalia
-    state: present
-  become: '{{ ansible_user_id != "root" }}'
-  when:
-    - vastai_host_install_execute
-    - vastai_host_install_mode in ['local', 'remote']
-    - vastai_host_account_identity_effective | length > 0
 - name: Deploy host port range file
   ansible.builtin.template:
     src: host_port_range.j2
@@ -123,7 +103,6 @@
     mode: '0644'
     owner: '{{ vastai_host_config_template_user }}'
     group: '{{ vastai_host_config_template_group }}'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -135,7 +114,6 @@
     mode: '0644'
     owner: '{{ vastai_host_config_template_user }}'
     group: '{{ vastai_host_config_template_group }}'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -148,7 +126,6 @@
     mode: '0644'
     owner: '{{ vastai_host_config_template_user }}'
     group: '{{ vastai_host_config_template_group }}'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -160,16 +137,17 @@
     mode: '0644'
     owner: '{{ vastai_host_config_template_user }}'
     group: '{{ vastai_host_config_template_group }}'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
 - name: Unhold apt packages before installer run
-  ansible.builtin.command:
-    cmd: >-
-      apt-mark unhold {{ vastai_host_install_unhold_package_list | join(' ') }}
-  become: '{{ ansible_user_id != "root" }}'
+  ansible.builtin.shell: >-
+    for pkg in {{ vastai_host_install_unhold_package_list | join(' ') }}; do
+      if dpkg -s "$pkg" >/dev/null 2>&1; then
+        apt-mark unhold "$pkg"
+      fi
+    done
   register: vastai_host_install_unhold_result
   changed_when: "'Canceled hold on' in vastai_host_install_unhold_result.stdout"
   when:
@@ -183,7 +161,6 @@
     name: '{{ vastai_host_install_prerequisite_packages }}'
     state: present
     update_cache: true
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -223,25 +200,29 @@
     - vastai_host_preflight_validate_api_key
     - vastai_host_api_key_preflight_result is defined
     - vastai_host_api_key_preflight_result.status in [401, 403]
+- name: Check installer completion marker
+  ansible.builtin.stat:
+    path: /var/lib/vastai_kaalia/.ansible_vastai_install_done
+  register: vastai_host_install_done_stat
 - name: Check existing latest path type before installer run
   ansible.builtin.stat:
     path: /var/lib/vastai_kaalia/latest
     follow: false
   register: vastai_host_latest_path_stat
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
+    - not vastai_host_install_done_stat.stat.exists
 - name: Remove stale non-symlink latest path before installer run
   ansible.builtin.file:
     path: /var/lib/vastai_kaalia/latest
     state: absent
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
+    - not vastai_host_install_done_stat.stat.exists
     - vastai_host_latest_path_stat.stat.exists
     - not vastai_host_latest_path_stat.stat.islnk
 - name: Ensure daemon runtime payload is managed for non-native mode before installer run
@@ -253,9 +234,9 @@
     trap 'rm -rf "$tmp_dir"' EXIT;
     curl -fsSL '{{ vastai_host_daemon_archive_url }}' -o "$tmp_dir/daemon.tar.gz";
     tar -xzf "$tmp_dir/daemon.tar.gz" -C "$latest_dir";
-    # Ensure correct permissions on scripts and binaries
+                # Ensure correct permissions on scripts and binaries
     find "$latest_dir" -type f -exec chmod 0755 {} \+;
-    # Ensure known configs are 0644
+                # Ensure known configs are 0644
     for file in apt-packages rocm_info.json logrotate.config dsnfile; do
       [ -f "$latest_dir/$file" ] && chmod 0644 "$latest_dir/$file" || true
     done
@@ -263,7 +244,6 @@
   args:
     executable: /bin/bash
   changed_when: true
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -280,14 +260,13 @@
     - /var/lib/vastai_kaalia/latest/launch_kaalia.sh
     - /var/lib/vastai_kaalia/latest/launch_metrics_pusher.sh
     - /var/lib/vastai_kaalia/latest/machine_metrics_pusher.py
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
     - vastai_host_account_identity_effective | length > 0
     - vastai_host_install_script_run_mode == 'daemon'
+    - vastai_host_manage_non_native_daemon_payload
 - name: Run install script
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -353,7 +332,6 @@
     mode: '0644'
     owner: root
     group: root
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -365,7 +343,6 @@
     mode: '0644'
     owner: root
     group: root
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -377,7 +354,6 @@
     daemon_reload: true
     enabled: true
     state: started
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - not ansible_check_mode
     - vastai_host_install_execute
@@ -390,7 +366,6 @@
     daemon_reload: true
     enabled: true
     state: started
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - not ansible_check_mode
     - vastai_host_install_execute
@@ -406,7 +381,6 @@
     owner: '{{ vastai_host_config_template_user }}'
     group: '{{ vastai_host_config_template_group }}'
   register: vastai_host_cron_template_result
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -416,7 +390,6 @@
   ansible.builtin.command:
     cmd: crontab -u vastai_kaalia {{ vastai_host_cron_file_path }}
   changed_when: vastai_host_cron_template_result.changed
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -427,7 +400,6 @@
     content: completed\n
     dest: /var/lib/vastai_kaalia/.ansible_vastai_install_done
     mode: '0644'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode in ['local', 'remote']
@@ -447,7 +419,6 @@
     path: /var/lib/vastai_kaalia
     state: directory
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
@@ -456,7 +427,6 @@
     path: /var/lib/vastai_kaalia/data
     state: directory
     mode: '0755'
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - vastai_host_install_mode == 'native'
@@ -476,7 +446,6 @@
     mode: '0700'
     owner: vastai_kaalia
     group: nogroup
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - >-
@@ -493,7 +462,6 @@
     mode: '0600'
     owner: vastai_kaalia
     group: nogroup
-  become: '{{ ansible_user_id != "root" }}'
   when:
     - vastai_host_install_execute
     - >-
