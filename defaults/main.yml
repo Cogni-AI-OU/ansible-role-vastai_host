@@ -30,6 +30,8 @@ vastai_host_install_unhold_package_list:
   - qemu-system-x86
   - xfsprogs
 vastai_host_install_prerequisite_packages:
+  - python3-requests
+  - cron
   - openssh-server
   - logrotate
   - libvirt-dev

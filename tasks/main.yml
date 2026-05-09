@@ -1,14 +1,17 @@
 ---
-- name: Include Debian and Ubuntu tasks
-  ansible.builtin.include_tasks:
-    apply:
-      tags: vastai_host-setup
-    file: Debian.yml
+- name: Setup and verify Vast.ai host (Debian)
   when: ansible_os_family == 'Debian'
-  tags: vastai_host-setup
-- name: Verify installation
-  ansible.builtin.include_tasks:
-    apply:
+  become: '{{ ansible_facts["user_id"] != "root" }}'
+  block:
+    - name: Include Debian and Ubuntu tasks
+      ansible.builtin.include_tasks:
+        apply:
+          tags: vastai_host-setup
+        file: Debian.yml
+      tags: vastai_host-setup
+    - name: Verify installation
+      ansible.builtin.include_tasks:
+        apply:
+          tags: vastai_host-verify
+        file: verify.yml
       tags: vastai_host-verify
-    file: verify.yml
-  tags: vastai_host-verify
