@@ -5,7 +5,7 @@
   tasks:
     - name: Set identity for testing
       ansible.builtin.set_fact:
-        vastai_host_account_identity: "test_key"
+        vastai_host_account_identity: test_key
         vastai_host_install_execute: true
         vastai_host_install_mode: local
         vastai_host_install_location: molecule/default/mock_installer.py

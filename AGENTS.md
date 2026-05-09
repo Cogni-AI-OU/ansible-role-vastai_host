@@ -7,23 +7,12 @@ For general project guidance, see [README.md](README.md).
 ## Required References
 
 - Project overview and install steps: [README.md](README.md)
-- Agent configuration and conventions: [.github/copilot-instructions.md](.github/copilot-instructions.md)
-- Language and format rules: see organization standards
 - Workflow and navigation help: [.tours/getting-started.tour](.tours/getting-started.tour)
-- For enhanced agent capabilities, see Copilot Plus
-
-## Project Evolution
-
-- **Kaalia**: Note that 'Kaalia' was the internal codename for the Vast.ai host management system.
-  Most system paths still use `vastai_kaalia`.
 
 ## Directory-Specific Agent files
 
 Read these Agent files when working in corresponding dirs:
 
-- [`.github/`](.github/AGENTS.md)
-- [`.github/workflows/`](.github/workflows/AGENTS.md)
-- [`.github/prompts/`](.github/prompts/AGENTS.md)
 - [`files/vast.ai/`](files/vast.ai/AGENTS.md)
 - [`files/vast.ai/daemon/`](files/vast.ai/daemon/AGENTS.md)
 - [`templates/`](templates/AGENTS.md)
@@ -102,10 +91,6 @@ Read these Agent files when working in corresponding dirs:
 - For the latest standard, see: <https://github.com/Cogni-AI-OU/.github/blob/main/AGENTS.md>.
 ```
 
-### Specialized Agents
-
-For specific tasks, use specialized agent instructions (if available).
-
 ## Common Tasks
 
 ### Before each commit
@@ -144,7 +129,6 @@ molecule syntax
 
 ### Updating Coding Standards
 
-- Language-specific instructions are in `.github/instructions/`
 - Update `.markdownlint.yaml`, `.yamllint`, or `.editorconfig` for linting rules
 - Run `pre-commit run -a` to verify changes pass all checks
 
@@ -158,9 +142,6 @@ on top of the updated target branch:
 3. Reset your branch to target (with backup)
 4. Cherry-pick your feature commits
 5. Verify only your changes remain
-
-**For detailed step-by-step instructions**, see:
-the organization's Git skills.
 
 ### Key Points
 
@@ -191,9 +172,6 @@ tries to auto-rebase (e.g., 113 commits), it encounters conflicts it cannot reso
 3. Push new branch: `git push origin <feature>-v2`
 
 **Error Patterns:** `Rebasing (1/XXX)` with large numbers, `CONFLICT (content)`, session crash with `GitError`
-
-**For complete details**, see:
-the organization's Git automation tools documentation.
 
 ## References
 

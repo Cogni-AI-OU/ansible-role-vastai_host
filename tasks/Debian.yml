@@ -61,7 +61,7 @@
     group: '{{ vastai_host_config_template_group }}'
     groups: docker
     system: true
-    shell: /bin/bash
+    shell: /usr/sbin/nologin
     create_home: false
     home: /var/lib/vastai_kaalia
     state: present
@@ -234,9 +234,9 @@
     trap 'rm -rf "$tmp_dir"' EXIT;
     curl -fsSL '{{ vastai_host_daemon_archive_url }}' -o "$tmp_dir/daemon.tar.gz";
     tar -xzf "$tmp_dir/daemon.tar.gz" -C "$latest_dir";
-                # Ensure correct permissions on scripts and binaries
+                              # Ensure correct permissions on scripts and binaries
     find "$latest_dir" -type f -exec chmod 0755 {} \+;
-                # Ensure known configs are 0644
+                              # Ensure known configs are 0644
     for file in apt-packages rocm_info.json logrotate.config dsnfile; do
       [ -f "$latest_dir/$file" ] && chmod 0644 "$latest_dir/$file" || true
     done

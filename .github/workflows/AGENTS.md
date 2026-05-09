@@ -9,28 +9,27 @@ For a human-readable overview, see [README.md](README.md).
 
 | Workflow | Purpose | Key triggers / notes |
 | -------- | ------- | -------------------- |
-| [check.yml](check.yml) | Linting and quality gates via actionlint and pre-commit | push, pull_request, schedule; reusable |
-| [devcontainer-ci.yml](devcontainer-ci.yml) | Build/test devcontainer and required tools/packages | push, pull_request, schedule |
-| [molecule.yml](molecule.yml) | Run Molecule tests for Ansible role | push, pull_request, workflow_dispatch |
-| [test.yml](test.yml) | Generic test runner | push, pull_request |
+| [check.yml](check.yml) | Linting and quality gates via actionlint and pre-commit | push, pull_request, schedule; reusable via `workflow_call` |
+| [cogni-ai-agent.yml](cogni-ai-agent.yml) | AI-assisted development via Cogni AI Agent | issue_comment, issues, pull_request, pull_request_review_comment; `workflow_call`; `workflow_dispatch` |
+| [devcontainer-ci.yml](devcontainer-ci.yml) | Build/test devcontainer and required tools/packages | push/pull_request touching .devcontainer or workflow; schedule; `workflow_call` |
+| [molecule.yml](molecule.yml) | Molecule tests for Ansible roles | push, pull_request; reusable via `workflow_call` |
+| [test.yml](test.yml) | Run tests for the repository | push, pull_request |
 
 ## Details
 
 ### check.yml
 
 - Purpose: run actionlint and pre-commit to enforce workflow and repo standards.
-- Reusable: `uses: Cogni-AI-OU/.github/.github/workflows/check.yml@main`.
 - Jobs: `actionlint`, `pre-commit`.
 
-### devcontainer-ci.yml
+### cogni-ai-agent.yml
 
-- Purpose: build and validate the dev container; ensure required tools and Python packages exist.
-- Inputs: `required_commands` (defaults to common CLI tools), `required_python_packages`
-  (defaults to ansible, ansible-lint, docker, molecule, pre-commit, uv).
-- Triggers: pull_request/push affecting `.devcontainer/` or this workflow; weekly schedule;
-  `workflow_call`.
-- Permissions: callers must grant `packages: write` when pushing images to GHCR.
-- Reusable: `uses: Cogni-AI-OU/.github/.github/workflows/devcontainer-ci.yml@main`.
+- Purpose: AI-assisted development automation triggered by issues, comments, and PRs.
+- Reusable: `uses: Cogni-AI-OU/ansible-role-vastai_host/.github/workflows/cogni-ai-agent.yml@main`.
+- Inputs: `model`, `prompt`.
+- Requires `OPENCODE_API_KEY` secret.
+
+### devcontainer-ci.yml
 
 ## Notes
 
