@@ -4,6 +4,15 @@
   hosts: all
   gather_facts: true  # Disable if your role does not rely on facts
   tasks:
+    - name: Set identity for testing
+      ansible.builtin.set_fact:
+        vastai_host_account_identity: test_key
+        vastai_host_install_execute: true
+        vastai_host_install_location: molecule/default/mock_installer.py
+        vastai_host_install_unhold_packages_before_run: false
+        vastai_host_manage_non_native_daemon_payload: false
+        vastai_host_install_start_daemon: false
+        vastai_host_preflight_validate_api_key: false
     - name: Include main role
       ansible.builtin.include_role:
         name: cogni-ai.vastai_host
