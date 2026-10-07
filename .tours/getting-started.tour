@@ -52,7 +52,7 @@
     },
     {
       "title": "Molecule Scenarios",
-      "description": "The `molecule/` folder now includes scenario directories:\n\n- `default`\n- `devel`\n- `standalone`\n- `local-daemon`\n- `native-placeholder`\n\nUse scenario-specific vars to cover different role modes.",
+      "description": "The `molecule/` folder now includes scenario directories:\n\n- `default`\n- `standalone`\n- `local-daemon`\n- `native-placeholder`\n\nUse scenario-specific vars to cover different role modes.",
       "directory": "molecule"
     },
     {
